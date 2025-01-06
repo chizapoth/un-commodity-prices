@@ -1,0 +1,26 @@
+---
+title: "Documentation"
+listing:
+  - id: projects
+    fields: [title]
+    contents: 
+      - "1_project_overview.qmd"
+    type: table
+    sort: false # keep original order
+    filter-ui: false
+    sort-ui: false
+    categories: true
+    
+#  - id: data-processing
+#    fields: [title]
+#    contents: 
+#      - "data_process_1.qmd"
+#    type: table
+#    sort: "title"
+#    filter-ui: false
+#    sort-ui: false
+#    categories: true
+---
+
+::: {#projects}
+:::

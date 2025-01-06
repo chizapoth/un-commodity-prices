@@ -1,0 +1,27 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  page-navigation: true
+  title: "CPI"
+
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+
+      - href: documentation/index.qmd
+        text: Documentation
+
+
+    right: 
+      - icon: github
+        href: https://github.com/andreaczhang/unctad-int
+        
+format:
+  html:
+    theme: lumen
+    # css: styles.css
+    toc: true
+
