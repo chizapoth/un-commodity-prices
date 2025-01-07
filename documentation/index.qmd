@@ -12,16 +12,25 @@ listing:
     sort-ui: false
     categories: true
     
-#  - id: data-processing
-#    fields: [title]
-#    contents: 
-#      - "data_process_1.qmd"
-#    type: table
-#    sort: "title"
-#    filter-ui: false
-#    sort-ui: false
-#    categories: true
+  - id: misc
+    fields: [title]
+    contents: 
+      - "3_un.qmd"
+      - "4_softskills.qmd"
+    type: table
+    sort: false # keep original order
+    filter-ui: false
+    sort-ui: false
+    categories: true
 ---
 
+### Project
+
 ::: {#projects}
+:::
+
+
+### Background
+
+::: {#misc}
 :::

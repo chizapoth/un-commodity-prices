@@ -3,7 +3,9 @@
     "listing": "/documentation/index.html",
     "items": [
       "/documentation/1_project_overview.html",
-      "/documentation/2_method.html"
+      "/documentation/2_method.html",
+      "/documentation/3_un.html",
+      "/documentation/4_softskills.html"
     ]
   }
 ]

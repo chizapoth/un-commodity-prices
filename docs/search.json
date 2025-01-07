@@ -11,7 +11,7 @@
     "href": "documentation/index.html",
     "title": "Documentation",
     "section": "",
-    "text": "Title\n\n\n\n\n\n\nProjects overview\n\n\n\n\nMethodology\n\n\n\n\n\nNo matching items"
+    "text": "Project\n\n\n\n\n\nTitle\n\n\n\n\n\n\nProjects overview\n\n\n\n\nMethodology\n\n\n\n\n\nNo matching items\n\n\n\n\nBackground\n\n\n\n\n\nTitle\n\n\n\n\n\n\nThe UN system\n\n\n\n\nSoft skills\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "documentation/2_method.html",
@@ -47,5 +47,19 @@
     "title": "Internal methodology",
     "section": "",
     "text": "Internal methodology\nUNCTADstat target tables\n\nmonthly price from Jan 1995 to month m-1\nmonthly price indices from Jan 1995 to month m-1\nannual price from 1995 to year y-1\nannual price indices from 1995 to year y-1\n\nData collection methods\n\nemail from figures or data sheets\ndownload from websites\nthrough web APIs\nautomatically update Excels with API\ncopy figures from PDFs"
+  },
+  {
+    "objectID": "documentation/index.html#project",
+    "href": "documentation/index.html#project",
+    "title": "Documentation",
+    "section": "",
+    "text": "Title\n\n\n\n\n\n\nProjects overview\n\n\n\n\nMethodology\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "documentation/index.html#background",
+    "href": "documentation/index.html#background",
+    "title": "Documentation",
+    "section": "Background",
+    "text": "Background\n\n\n\n\n\nTitle\n\n\n\n\n\n\nThe UN system\n\n\n\n\nSoft skills\n\n\n\n\n\nNo matching items"
   }
 ]
