@@ -20,6 +20,8 @@ format:
 
 ## Motivation 
 
+Statistics on monthly and annual development of commodity prices ad CPI (UNCTAD CPI)  are released. This is divided by commodity groups. Monthly update is made 2 months later; annual update made in Feburary for preliminary version and October for final version. 
+
 
 
 

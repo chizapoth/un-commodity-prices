@@ -1,0 +1,62 @@
+---
+title: "Methodology"
+description: |
+  
+#author: "Chi Zhang"
+#date: "2025-01-05"
+#categories: []
+sidebar: false
+code-block-bg: false
+code-block-border-left: true
+format: 
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    code-tools: false
+    highlight-style: gruvbox
+---
+
+Resources: [UNCTAD Commodity Price Index](https://unctad.org/system/files/official-document/statcpbmn1_en.pdf)
+
+
+CPI: commodity price index: an index average (weighted) of selected commodity prices, which may be based on spot or future prices. It tracks a basket of commodities to measure their performance.
+
+Categories:
+
+* energy (coal, crude oil, ethanol, gas oil, gasoline, nature gas)
+* metals 
+  * base metals (lead, zinc, nickel, copper)
+  * precious metals (gold, silver, platinum, palladium)
+* agriculture
+  * grains (corn, oats, rice, soybeans, wheat)
+  * softs (coffee, cocoa, sugar, butter, cotton, milk)
+  * livestock (hogs, live cattle, pork bellies, feeder cattle)
+
+### Weights
+
+Weights determine how much importance each commodity have on the overall index
+
+Derived from UNSD Comtrade database.
+
+### Prices
+
+Derived from a representative sample of monthly, weekly or daily spot-market quotations, in USD
+
+Many are published, but not all
+
+
+$$L_{t,0}= \frac{\sum^n_{i=1} p_{i,t} q_{i,0}}{\sum^n_{i=1} p_{i,0} q_{i,0}} = \sum^n_{i=1} \frac{p_i^t}{p_i^0} s_i^0$$
+
+* $s_i^0$: weight of commodity item i
+* $p_i^t$: price in period t
+* $q_i^0$: quantity of commodity item i in the base period
+
+
+
+
+
+
+
+
+

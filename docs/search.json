@@ -11,6 +11,41 @@
     "href": "documentation/index.html",
     "title": "Documentation",
     "section": "",
-    "text": "Title\n\n\n\n\n\n\nProjects overview\n\n\n\n\n\nNo matching items"
+    "text": "Title\n\n\n\n\n\n\nProjects overview\n\n\n\n\nMethodology\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "documentation/2_method.html",
+    "href": "documentation/2_method.html",
+    "title": "Methodology",
+    "section": "",
+    "text": "Resources: UNCTAD Commodity Price Index\nCPI: commodity price index: an index average (weighted) of selected commodity prices, which may be based on spot or future prices. It tracks a basket of commodities to measure their performance.\nCategories:\n\nenergy (coal, crude oil, ethanol, gas oil, gasoline, nature gas)\nmetals\n\nbase metals (lead, zinc, nickel, copper)\nprecious metals (gold, silver, platinum, palladium)\n\nagriculture\n\ngrains (corn, oats, rice, soybeans, wheat)\nsofts (coffee, cocoa, sugar, butter, cotton, milk)\nlivestock (hogs, live cattle, pork bellies, feeder cattle)\n\n\n\nWeights\nWeights determine how much importance each commodity have on the overall index\nDerived from UNSD Comtrade database.\n\n\nPrices\nDerived from a representative sample of monthly, weekly or daily spot-market quotations, in USD\nMany are published, but not all\n\\[L_{t,0}= \\frac{\\sum^n_{i=1} p_{i,t} q_{i,0}}{\\sum^n_{i=1} p_{i,0} q_{i,0}} = \\sum^n_{i=1} \\frac{p_i^t}{p_i^0} s_i^0\\]\n\n\\(s_i^0\\): weight of commodity item i\n\\(p_i^t\\): price in period t\n\\(q_i^0\\): quantity of commodity item i in the base period"
+  },
+  {
+    "objectID": "internal/information.html",
+    "href": "internal/information.html",
+    "title": "CPI",
+    "section": "",
+    "text": "Some background information"
+  },
+  {
+    "objectID": "documentation/1_project_overview.html",
+    "href": "documentation/1_project_overview.html",
+    "title": "Projects overview",
+    "section": "",
+    "text": "Statistics on monthly and annual development of commodity prices ad CPI (UNCTAD CPI) are released. This is divided by commodity groups. Monthly update is made 2 months later; annual update made in Feburary for preliminary version and October for final version."
+  },
+  {
+    "objectID": "documentation/1_project_overview.html#motivation",
+    "href": "documentation/1_project_overview.html#motivation",
+    "title": "Projects overview",
+    "section": "",
+    "text": "Statistics on monthly and annual development of commodity prices ad CPI (UNCTAD CPI) are released. This is divided by commodity groups. Monthly update is made 2 months later; annual update made in Feburary for preliminary version and October for final version."
+  },
+  {
+    "objectID": "internal/internal_method.html",
+    "href": "internal/internal_method.html",
+    "title": "Internal methodology",
+    "section": "",
+    "text": "Internal methodology\nUNCTADstat target tables\n\nmonthly price from Jan 1995 to month m-1\nmonthly price indices from Jan 1995 to month m-1\nannual price from 1995 to year y-1\nannual price indices from 1995 to year y-1\n\nData collection methods\n\nemail from figures or data sheets\ndownload from websites\nthrough web APIs\nautomatically update Excels with API\ncopy figures from PDFs"
   }
 ]

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>CPI - Projects overview</title>
+<title>CPI - Methodology</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -67,6 +67,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -118,7 +147,8 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">Motivation</a></li>
+  <li><a href="#weights" id="toc-weights" class="nav-link active" data-scroll-target="#weights">Weights</a></li>
+  <li><a href="#prices" id="toc-prices" class="nav-link" data-scroll-target="#prices">Prices</a></li>
   </ul>
 </nav>
     </div>
@@ -127,7 +157,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Projects overview</h1>
+<h1 class="title">Methodology</h1>
 </div>
 
 
@@ -144,9 +174,38 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="motivation" class="level2">
-<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
-<p>Statistics on monthly and annual development of commodity prices ad CPI (UNCTAD CPI) are released. This is divided by commodity groups. Monthly update is made 2 months later; annual update made in Feburary for preliminary version and October for final version.</p>
+<p>Resources: <a href="https://unctad.org/system/files/official-document/statcpbmn1_en.pdf">UNCTAD Commodity Price Index</a></p>
+<p>CPI: commodity price index: an index average (weighted) of selected commodity prices, which may be based on spot or future prices. It tracks a basket of commodities to measure their performance.</p>
+<p>Categories:</p>
+<ul>
+<li>energy (coal, crude oil, ethanol, gas oil, gasoline, nature gas)</li>
+<li>metals
+<ul>
+<li>base metals (lead, zinc, nickel, copper)</li>
+<li>precious metals (gold, silver, platinum, palladium)</li>
+</ul></li>
+<li>agriculture
+<ul>
+<li>grains (corn, oats, rice, soybeans, wheat)</li>
+<li>softs (coffee, cocoa, sugar, butter, cotton, milk)</li>
+<li>livestock (hogs, live cattle, pork bellies, feeder cattle)</li>
+</ul></li>
+</ul>
+<section id="weights" class="level3">
+<h3 class="anchored" data-anchor-id="weights">Weights</h3>
+<p>Weights determine how much importance each commodity have on the overall index</p>
+<p>Derived from UNSD Comtrade database.</p>
+</section>
+<section id="prices" class="level3">
+<h3 class="anchored" data-anchor-id="prices">Prices</h3>
+<p>Derived from a representative sample of monthly, weekly or daily spot-market quotations, in USD</p>
+<p>Many are published, but not all</p>
+<p><span class="math display">\[L_{t,0}= \frac{\sum^n_{i=1} p_{i,t} q_{i,0}}{\sum^n_{i=1} p_{i,0} q_{i,0}} = \sum^n_{i=1} \frac{p_i^t}{p_i^0} s_i^0\]</span></p>
+<ul>
+<li><span class="math inline">\(s_i^0\)</span>: weight of commodity item i</li>
+<li><span class="math inline">\(p_i^t\)</span>: price in period t</li>
+<li><span class="math inline">\(q_i^0\)</span>: quantity of commodity item i in the base period</li>
+</ul>
 
 
 </section>
