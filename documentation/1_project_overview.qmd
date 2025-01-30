@@ -17,6 +17,21 @@ format:
     highlight-style: gruvbox
 ---
 
+## Background 
+
+**Commodity dependence** (over 60% of a country's merchandise export revenue comes from these raw materials) hinders growth and development. This is due to the exposure to volatile commodity markets and global shocks such as Covid-19 and Ukraine War. If a country relies on a single commodity, the risk is worse.
+
+12% of advanced economies (such as Australia and Norway) are on the list, while 74% were some of the least developed countries.
+
+Comodity price rose sharply during Covid-19 pandemic
+
+
+Action: 
+
+* diversification towards sectors with high potential to create jobs and boost income
+* align education to the skills needed
+* diversify along low-emission paths
+
 
 ## Motivation 
 

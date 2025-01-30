@@ -1,5 +1,5 @@
 ---
-title: "UNCTAD"
+title: "Commodity Price Index"
 #image: misc/logo_dan.png
 about:
   id: hero-heading
@@ -13,5 +13,6 @@ about:
 
 ::: {#hero-heading}
 
-This is the documentation website for ...
+This is the documentation website for Commodity Price Index automation.
+
 :::

@@ -2,16 +2,16 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "UNCTAD",
+    "title": "Commodity Price Index",
     "section": "",
-    "text": "Github\n  \n\n  \n  \nThis is the documentation website for …"
+    "text": "Github\n  \n\n  \n  \nThis is the documentation website for Commodity Price Index automation."
   },
   {
     "objectID": "documentation/index.html",
     "href": "documentation/index.html",
     "title": "Documentation",
     "section": "",
-    "text": "Project\n\n\n\n\n\nTitle\n\n\n\n\n\n\nProjects overview\n\n\n\n\nMethodology\n\n\n\n\n\nNo matching items\n\n\n\n\nBackground\n\n\n\n\n\nTitle\n\n\n\n\n\n\nThe UN system\n\n\n\n\nSoft skills\n\n\n\n\n\nNo matching items"
+    "text": "Project\n\n\n\n\n\nTitle\n\n\n\n\n\n\nProjects overview\n\n\n\n\nMethodology\n\n\n\n\nMetals\n\n\n\n\n\nNo matching items\n\n\n\n\nBackground\n\n\n\n\n\nTitle\n\n\n\n\n\n\nThe UN system\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "documentation/2_method.html",
@@ -25,28 +25,28 @@
     "href": "internal/information.html",
     "title": "CPI",
     "section": "",
-    "text": "Some background information"
+    "text": "Language\nread Economist\n\n\nNetworking\npeople in this section, after having the email account\n\ndiana\ndaniel\n\nother people?"
   },
   {
     "objectID": "documentation/1_project_overview.html",
     "href": "documentation/1_project_overview.html",
     "title": "Projects overview",
     "section": "",
-    "text": "Statistics on monthly and annual development of commodity prices ad CPI (UNCTAD CPI) are released. This is divided by commodity groups. Monthly update is made 2 months later; annual update made in Feburary for preliminary version and October for final version."
+    "text": "Commodity dependence (over 60% of a country’s merchandise export revenue comes from these raw materials) hinders growth and development. This is due to the exposure to volatile commodity markets and global shocks such as Covid-19 and Ukraine War. If a country relies on a single commodity, the risk is worse.\n12% of advanced economies (such as Australia and Norway) are on the list, while 74% were some of the least developed countries.\nComodity price rose sharply during Covid-19 pandemic\nAction:\n\ndiversification towards sectors with high potential to create jobs and boost income\nalign education to the skills needed\ndiversify along low-emission paths"
   },
   {
     "objectID": "documentation/1_project_overview.html#motivation",
     "href": "documentation/1_project_overview.html#motivation",
     "title": "Projects overview",
-    "section": "",
-    "text": "Statistics on monthly and annual development of commodity prices ad CPI (UNCTAD CPI) are released. This is divided by commodity groups. Monthly update is made 2 months later; annual update made in Feburary for preliminary version and October for final version."
+    "section": "Motivation",
+    "text": "Motivation\nStatistics on monthly and annual development of commodity prices ad CPI (UNCTAD CPI) are released. This is divided by commodity groups. Monthly update is made 2 months later; annual update made in February for preliminary version and October for final version."
   },
   {
     "objectID": "internal/internal_method.html",
     "href": "internal/internal_method.html",
     "title": "Internal methodology",
     "section": "",
-    "text": "Internal methodology\nUNCTADstat target tables\n\nmonthly price from Jan 1995 to month m-1\nmonthly price indices from Jan 1995 to month m-1\nannual price from 1995 to year y-1\nannual price indices from 1995 to year y-1\n\nData collection methods\n\nemail from figures or data sheets\ndownload from websites\nthrough web APIs\nautomatically update Excels with API\ncopy figures from PDFs"
+    "text": "UNCTADstat target tables\n\nmonthly price from Jan 1995 to month m-1\nmonthly price indices from Jan 1995 to month m-1\nannual price from 1995 to year y-1\nannual price indices from 1995 to year y-1\n\nData collection methods\n\nemail from figures or data sheets\ndownload from websites\nthrough web APIs\nautomatically update Excels with API\ncopy figures from PDFs"
   },
   {
     "objectID": "documentation/index.html#project",
@@ -61,5 +61,40 @@
     "title": "Documentation",
     "section": "Background",
     "text": "Background\n\n\n\n\n\nTitle\n\n\n\n\n\n\nThe UN system\n\n\n\n\nSoft skills\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "documentation/4_softskills.html",
+    "href": "documentation/4_softskills.html",
+    "title": "Soft skills",
+    "section": "",
+    "text": "Ways to speak\nTerminology to use"
+  },
+  {
+    "objectID": "documentation/1_project_overview.html#background",
+    "href": "documentation/1_project_overview.html#background",
+    "title": "Projects overview",
+    "section": "",
+    "text": "Commodity dependence (over 60% of a country’s merchandise export revenue comes from these raw materials) hinders growth and development. This is due to the exposure to volatile commodity markets and global shocks such as Covid-19 and Ukraine War. If a country relies on a single commodity, the risk is worse.\n12% of advanced economies (such as Australia and Norway) are on the list, while 74% were some of the least developed countries.\nComodity price rose sharply during Covid-19 pandemic\nAction:\n\ndiversification towards sectors with high potential to create jobs and boost income\nalign education to the skills needed\ndiversify along low-emission paths"
+  },
+  {
+    "objectID": "internal/internal_method.html#data-collection-and-validation-collect_v2-0.r",
+    "href": "internal/internal_method.html#data-collection-and-validation-collect_v2-0.r",
+    "title": "Internal methodology",
+    "section": "Data collection and validation collect_v2-0.R",
+    "text": "Data collection and validation collect_v2-0.R\nHarvesters/*: these are functions that download and put the data as csv\n\nPseudo: load data from S folder\nHarvester: load via API, e.g. 5110 from World Bank\n\nDepends on functions in\n\nreview-collected_v4.R\nintegrate.R\ncheck-multiple.R"
+  },
+  {
+    "objectID": "internal/internal_method.html#prelim---analysis",
+    "href": "internal/internal_method.html#prelim---analysis",
+    "title": "Internal methodology",
+    "section": "Prelim - analysis",
+    "text": "Prelim - analysis\n\nData coverage, CPS_Dataediting_v2.R\nDepends on functions in\n\nmis-units_v2.R, if the price series is completely missing, by comparing with the updated.csv\nmis-ob_v2.R, partially missing\nbenchmark.R, Imputation for missing\ncheck-multiple.R\n\nproduce input-prices.csv\n\n\nCheck produced price checks_prices_v2\nDepends on functions in\n\nchk.revisions: identify revisions and order by degree\nchk.graph: check with visualization"
+  },
+  {
+    "objectID": "documentation/5_metals.html",
+    "href": "documentation/5_metals.html",
+    "title": "Metals",
+    "section": "",
+    "text": "Motivation: replace the commodity products from Metal Bulletin (6801) by equivalent items from World Bank (5110).\nMetals (more to add)\n\nbase metals (lead, zinc, nickel, copper)\nprecious metals (gold, silver, platinum, palladium)\n\nAbbreviations:\n\nWB: World Bank\nMB: Metal Bulletin\nmeta: metadata for all commodities\n\n\nData\n\ncommodity_metadata.xlsx, the metadata for all commodities. Contains information on the series code, commodity names (short and long), data sources.\n\n79 unique commodity series\n21 unique data sources\n\nCMO-Historical-Data-Monthly.xlsx (sheet Monthly Price), monthly updated data from World Bank. This is the data we are using to replace Metal Bulletin.\n\nnote that this dataset has many more commodities beyond just metals.\n\n6801_MetalBulletin_patched.csv, data collected manually from Metal Bulletin. This is used as baseline and quality check with the automated process from WB.\n\n\n\nMetals\nThere are 16 unique series code (for metals) from MB, and they match the ones in meta. This is not surprising.\nNow the task is to match the series in WB with the existing ones. WB series does not have series code. Some are identical; some differ by a scale (possibly due to exchange rate?); some do not exist in WB data."
   }
 ]
