@@ -6,7 +6,7 @@ listing:
     contents: 
       - "1_project_overview.qmd"
       - "2_method.qmd"
-      - "5_metals.qmd"
+      - "3_replacements.qmd"
     type: table
     sort: false # keep original order
     filter-ui: false
@@ -16,7 +16,7 @@ listing:
   - id: misc
     fields: [title]
     contents: 
-      - "3_un.qmd"
+      - "x_interests.qmd"
       # - "4_softskills.qmd"
     type: table
     sort: false # keep original order

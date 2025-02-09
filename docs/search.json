@@ -2,16 +2,16 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Commodity Price Index",
+    "title": "Trade and Development Notebook",
     "section": "",
-    "text": "Github\n  \n\n  \n  \nThis is the documentation website for Commodity Price Index automation."
+    "text": "Github\n  \n\n  \n  \nThis is the documentation website for learning on Trade and Development."
   },
   {
     "objectID": "documentation/index.html",
     "href": "documentation/index.html",
     "title": "Documentation",
     "section": "",
-    "text": "Project\n\n\n\n\n\nTitle\n\n\n\n\n\n\nProjects overview\n\n\n\n\nMethodology\n\n\n\n\nMetals\n\n\n\n\n\nNo matching items\n\n\n\n\nBackground\n\n\n\n\n\nTitle\n\n\n\n\n\n\nThe UN system\n\n\n\n\n\nNo matching items"
+    "text": "Project\n\n\n\n\n\nTitle\n\n\n\n\n\n\nProjects overview\n\n\n\n\nMethodology\n\n\n\n\nWorld Bank replacements\n\n\n\n\n\nNo matching items\n\n\n\n\nBackground\n\n\n\n\n\nTitle\n\n\n\n\n\n\nAspects of interest\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "documentation/2_method.html",
@@ -93,8 +93,85 @@
   {
     "objectID": "documentation/5_metals.html",
     "href": "documentation/5_metals.html",
-    "title": "Metals",
+    "title": "World Bank replacements",
     "section": "",
-    "text": "Motivation: replace the commodity products from Metal Bulletin (6801) by equivalent items from World Bank (5110).\nMetals (more to add)\n\nbase metals (lead, zinc, nickel, copper)\nprecious metals (gold, silver, platinum, palladium)\n\nAbbreviations:\n\nWB: World Bank\nMB: Metal Bulletin\nmeta: metadata for all commodities\n\n\nData\n\ncommodity_metadata.xlsx, the metadata for all commodities. Contains information on the series code, commodity names (short and long), data sources.\n\n79 unique commodity series\n21 unique data sources\n\nCMO-Historical-Data-Monthly.xlsx (sheet Monthly Price), monthly updated data from World Bank. This is the data we are using to replace Metal Bulletin.\n\nnote that this dataset has many more commodities beyond just metals.\n\n6801_MetalBulletin_patched.csv, data collected manually from Metal Bulletin. This is used as baseline and quality check with the automated process from WB.\n\n\n\nMetals\nThere are 16 unique series code (for metals) from MB, and they match the ones in meta. This is not surprising.\nNow the task is to match the series in WB with the existing ones. WB series does not have series code. Some are identical; some differ by a scale (possibly due to exchange rate?); some do not exist in WB data."
+    "text": "Motivation: replace the commodity products from their original sources by equivalent items from World Bank (5110).\nAbbreviations:"
+  },
+  {
+    "objectID": "documentation/5_metals.html#metals",
+    "href": "documentation/5_metals.html#metals",
+    "title": "World Bank replacements",
+    "section": "Metals",
+    "text": "Metals\nThere are 16 unique series code (for metals) from MB, and they match the ones in meta. This is not surprising.\nNow the task is to match the series in WB with the existing ones. WB series does not have series code. Some are identical; some differ by a scale (possibly due to exchange rate?); some do not exist in WB data.\n\n\n\n\n\n\n\n\n\n\nName\nCode\nColumn in WB data\nAlternative source\nComment\n\n\n\n\nGold\n\n\nMB\nOK\n\n\nCopper\n\n\nMB\n260300.01 code has same trend but different values\n\n\nAluminium\n\n\nMB\nOK\n\n\nSilver\n\n\nMB\nOK, differ by 100 times\n\n\nNickel\n\n\nMB\nOK\n\n\nZinc\n\n\n\nOK\n\n\nPlatinum\n\nMB\n\nOK\n\n\nLead\n\n\nMB\nOK\n\n\nTin\n\n\nMB\nOK\n\n\nManganese\n\n\nMB\nNot available in WB\n\n\nIron\n260100.02, 03\n-\nTR\nTR Only available from 2010.9 for both. WB uses code 02, can directly replace."
+  },
+  {
+    "objectID": "documentation/5_metals.html#summary",
+    "href": "documentation/5_metals.html#summary",
+    "title": "World Bank replacements",
+    "section": "Summary",
+    "text": "Summary\n\n\n\n\n\n\n\n\n\n\nName\nCode\nColumn in WB data\nAlternative source\nComment\n\n\n\n\nGold\n\n\nMB\nOK\n\n\nCopper\n\n\nMB\n260300.01 code has same trend but different values\n\n\nAluminium\n\n\nMB\nOK\n\n\nSilver\n\n\nMB\nOK, differ by 100 times\n\n\nNickel\n\n\nMB\nOK\n\n\nZinc\n\n\n\nOK\n\n\nPlatinum\n\nMB\n\nOK\n\n\nLead\n\n\nMB\nOK\n\n\nTin\n\n\nMB\nOK\n\n\nManganese\n\n\nMB\nNot available in WB\n\n\nIron\n260100.02, 03\n-\nTR\nTR Only available from 2010.9 for both. WB uses code 02, can directly replace."
+  },
+  {
+    "objectID": "documentation/3_replacements.html",
+    "href": "documentation/3_replacements.html",
+    "title": "World Bank replacements",
+    "section": "",
+    "text": "Motivation: replace the commodity products from their original sources by equivalent items from World Bank (5110).\nAbbreviations:"
+  },
+  {
+    "objectID": "documentation/3_replacements.html#summary",
+    "href": "documentation/3_replacements.html#summary",
+    "title": "World Bank replacements",
+    "section": "Summary",
+    "text": "Summary\n\n\n\n\n\n\n\n\n\n\nName\nCode\nColumn in WB data\nAlternative source\nComment\n\n\n\n\nGold\n\n\nMB\nOK\n\n\nCopper\n\n\nMB\n260300.01 code has same trend but different values\n\n\nAluminium\n\n\nMB\nOK\n\n\nSilver\n\n\nMB\nOK, differ by 100 times\n\n\nNickel\n\n\nMB\nOK\n\n\nZinc\n\n\n\nOK\n\n\nPlatinum\n\nMB\n\nOK\n\n\nLead\n\n\nMB\nOK\n\n\nTin\n\n\nMB\nOK\n\n\nManganese\n\n\nMB\nNot available in WB\n\n\nIron\n260100.02, 03\n-\nTR\nTR Only available from 2010.9 for both. WB uses code 02, can directly replace."
+  },
+  {
+    "objectID": "documentation/x_interests.html",
+    "href": "documentation/x_interests.html",
+    "title": "Aspects of interest",
+    "section": "",
+    "text": "A few projects that could be interesting to learn more about. Need to be an overlap between skills to develop and data available."
+  },
+  {
+    "objectID": "documentation/x_interests.html#commodity-prices",
+    "href": "documentation/x_interests.html#commodity-prices",
+    "title": "Aspects of interest",
+    "section": "Commodity prices",
+    "text": "Commodity prices\nMonthly updated commodity prices using sources from World Bank, IMF.\nTo learn:\n\nNowcasting?\n\n\n\n\n\n\n\nSkills and impact\n\n\n\n\n\n\nResources\n\nInternational commodity bodies\nCommodities and development report 2023\n\n\nNowcasting\nTwo papers:\n\nEconomic Nowcasting with LSTM ANN\nBenchmarking econometric and machine learning methodologies in nowcasting\n\nDashboard\nDynamic factor models nowcastDFM"
+  },
+  {
+    "objectID": "documentation/x_interests.html#services",
+    "href": "documentation/x_interests.html#services",
+    "title": "Aspects of interest",
+    "section": "Services",
+    "text": "Services\n\n\n\n\n\n\nSkills and impact"
+  },
+  {
+    "objectID": "documentation/x_interests.html#datahub-api",
+    "href": "documentation/x_interests.html#datahub-api",
+    "title": "Aspects of interest",
+    "section": "DataHub API",
+    "text": "DataHub API"
+  },
+  {
+    "objectID": "documentation/x_interests.html#unctad-llm",
+    "href": "documentation/x_interests.html#unctad-llm",
+    "title": "Aspects of interest",
+    "section": "UNCTAD LLM",
+    "text": "UNCTAD LLM\nUNCTAD internal system for RAG (retrieval-augmented generation)\nTo learn:\n\nLLM in general\nHow the app is set up\n\n\n\n\n\n\n\nSkills and impact"
+  },
+  {
+    "objectID": "documentation/x_interests.html#data-hub-api",
+    "href": "documentation/x_interests.html#data-hub-api",
+    "title": "Aspects of interest",
+    "section": "Data Hub API",
+    "text": "Data Hub API\nThe data dashboard"
+  },
+  {
+    "objectID": "documentation/x_interests.html#visualization-palette-sdg",
+    "href": "documentation/x_interests.html#visualization-palette-sdg",
+    "title": "Aspects of interest",
+    "section": "Visualization palette (SDG)",
+    "text": "Visualization palette (SDG)\nInspired by UNCTAD and UNHCR. (UNHCR has a few interesting packages!)"
   }
 ]

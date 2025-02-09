@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>CPI - Documentation</title>
+<title>CPI - Aspects of interest</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,8 +30,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<script src="../site_libs/quarto-listing/list.min.js"></script>
-<script src="../site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -68,93 +66,7 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-projects .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-projects'] = new List('listing-projects', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-misc .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-misc'] = new List('listing-misc', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -180,7 +92,7 @@ window.Quarto = {
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../documentation/index.html" aria-current="page"> 
+    <a class="nav-link" href="../documentation/index.html"> 
 <span class="menu-text">Documentation</span></a>
   </li>  
 </ul>
@@ -206,17 +118,23 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#project" id="toc-project" class="nav-link active" data-scroll-target="#project">Project</a></li>
-  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
+  <li><a href="#commodity-prices" id="toc-commodity-prices" class="nav-link active" data-scroll-target="#commodity-prices">Commodity prices</a>
+  <ul class="collapse">
+  <li><a href="#nowcasting" id="toc-nowcasting" class="nav-link" data-scroll-target="#nowcasting">Nowcasting</a></li>
+  </ul></li>
+  <li><a href="#data-hub-api" id="toc-data-hub-api" class="nav-link" data-scroll-target="#data-hub-api">Data Hub API</a></li>
+  <li><a href="#visualization-palette-sdg" id="toc-visualization-palette-sdg" class="nav-link" data-scroll-target="#visualization-palette-sdg">Visualization palette (SDG)</a></li>
+  <li><a href="#unctad-llm" id="toc-unctad-llm" class="nav-link" data-scroll-target="#unctad-llm">UNCTAD LLM</a></li>
+  <li><a href="#services" id="toc-services" class="nav-link" data-scroll-target="#services">Services</a></li>
   </ul>
 </nav>
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(4)</span></div></div></div>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Documentation</h1>
+<h1 class="title">Aspects of interest</h1>
 </div>
 
 
@@ -233,64 +151,90 @@ window.Quarto = {
 </header>
 
 
-<section id="project" class="level3">
-<h3 class="anchored" data-anchor-id="project">Project</h3>
-<div id="listing-projects" class="quarto-listing quarto-listing-container-table">
-<table class="quarto-listing-table table">
-<thead>
-<tr>
-<th>
-Title
-</th>
-</tr>
-</thead>
-<tbody class="list">
-<tr data-index="0" data-listing-file-modified-sort="1736415169082" data-listing-reading-time-sort="1" data-listing-word-count-sort="144" data-listing-title-sort="Projects overview" data-listing-filename-sort="1_project_overview.qmd">
-<td>
-<a href="../documentation/1_project_overview.html" class="title listing-title">Projects overview</a>
-</td>
-</tr>
-<tr data-index="1" data-listing-file-modified-sort="1736243371136" data-listing-reading-time-sort="1" data-listing-word-count-sort="155" data-listing-title-sort="Methodology" data-listing-filename-sort="2_method.qmd">
-<td>
-<a href="../documentation/2_method.html" class="title listing-title">Methodology</a>
-</td>
-</tr>
-<tr data-index="2" data-listing-file-modified-sort="1739100107696" data-listing-reading-time-sort="2" data-listing-word-count-sort="215" data-listing-title-sort="World Bank replacements" data-listing-filename-sort="3_replacements.qmd">
-<td>
-<a href="../documentation/3_replacements.html" class="title listing-title">World Bank replacements</a>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="listing-no-matching d-none">
-No matching items
+<blockquote class="blockquote">
+<p>A few projects that could be interesting to learn more about. Need to be an overlap between skills to develop and data available.</p>
+</blockquote>
+<section id="commodity-prices" class="level2">
+<h2 class="anchored" data-anchor-id="commodity-prices">Commodity prices</h2>
+<p>Monthly updated commodity prices using sources from World Bank, IMF.</p>
+<p>To learn:</p>
+<ul>
+<li><strong>Nowcasting?</strong></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Skills and impact
+</div>
+</div>
+<div class="callout-body-container callout-body">
+
+</div>
+</div>
+<p>Resources</p>
+<ul>
+<li><a href="https://unctad.org/topic/commodities/international-commodity-bodies">International commodity bodies</a></li>
+<li><a href="https://unctad.org/publication/commodities-and-development-report-2023">Commodities and development report 2023</a></li>
+</ul>
+<section id="nowcasting" class="level3">
+<h3 class="anchored" data-anchor-id="nowcasting">Nowcasting</h3>
+<p>Two papers:</p>
+<ul>
+<li><a href="https://unctad.org/system/files/official-document/ser-rp-2021d5_en.pdf">Economic Nowcasting with LSTM ANN</a></li>
+<li><a href="https://unctad.org/publication/benchmarking-econometric-and-machine-learning-methodologies-nowcasting">Benchmarking econometric and machine learning methodologies in nowcasting</a></li>
+</ul>
+<p>Dashboard</p>
+<p>Dynamic factor models <a href="https://github.com/dhopp1/nowcastDFM">nowcastDFM</a></p>
+</section>
+</section>
+<section id="data-hub-api" class="level2">
+<h2 class="anchored" data-anchor-id="data-hub-api">Data Hub API</h2>
+<p>The data dashboard</p>
+</section>
+<section id="visualization-palette-sdg" class="level2">
+<h2 class="anchored" data-anchor-id="visualization-palette-sdg">Visualization palette (SDG)</h2>
+<p>Inspired by <a href="https://unctadstat.unctad.org/EN/ProcessedFood.html">UNCTAD</a> and UNHCR. (UNHCR has a few interesting packages!)</p>
+</section>
+<section id="unctad-llm" class="level2">
+<h2 class="anchored" data-anchor-id="unctad-llm">UNCTAD LLM</h2>
+<p>UNCTAD internal system for RAG (retrieval-augmented generation)</p>
+<p>To learn:</p>
+<ul>
+<li>LLM in general</li>
+<li>How the app is set up</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Skills and impact
+</div>
+</div>
+<div class="callout-body-container callout-body">
+
 </div>
 </div>
 </section>
-<section id="background" class="level3">
-<h3 class="anchored" data-anchor-id="background">Background</h3>
-<div id="listing-misc" class="quarto-listing quarto-listing-container-table">
-<table class="quarto-listing-table table">
-<thead>
-<tr>
-<th>
-Title
-</th>
-</tr>
-</thead>
-<tbody class="list">
-<tr data-index="0" data-listing-file-modified-sort="1739104593338" data-listing-reading-time-sort="1" data-listing-word-count-sort="115" data-listing-title-sort="Aspects of interest" data-listing-filename-sort="x_interests.qmd">
-<td>
-<a href="../documentation/x_interests.html" class="title listing-title">Aspects of interest</a>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="listing-no-matching d-none">
-No matching items
+<section id="services" class="level2">
+<h2 class="anchored" data-anchor-id="services">Services</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Skills and impact
 </div>
 </div>
+<div class="callout-body-container callout-body">
 
+</div>
+</div>
 
 
 </section>

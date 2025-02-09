@@ -1,5 +1,5 @@
 ---
-title: "Metals"
+title: "World Bank replacements"
 description: |
   
 #author: "Chi Zhang"
@@ -18,13 +18,7 @@ format:
 ---
 
 
-Motivation: replace the commodity products from **Metal Bulletin (6801)** by equivalent items from **World Bank (5110)**.
-
-Metals (more to add)
-
-* base metals (lead, zinc, nickel, copper)
-* precious metals (gold, silver, platinum, palladium)
-
+Motivation: replace the commodity products from their original sources by equivalent items from **World Bank (5110)**.
 
 Abbreviations: 
 
@@ -40,18 +34,27 @@ Abbreviations:
 * `CMO-Historical-Data-Monthly.xlsx` (sheet `Monthly Price`), monthly updated data from World Bank. This is the data we are using to replace Metal Bulletin. 
   * note that this dataset has many more commodities beyond just metals.
 * `6801_MetalBulletin_patched.csv`, data collected manually from Metal Bulletin. This is used as baseline and quality check with the automated process from WB.
+* ISO 
+* ICCO
+* Thompson Reuters
 
 
-### Metals
-
-There are 16 unique series code (for metals) from MB, and they match the ones in meta. This is not surprising.
-
-Now the task is to match the series in WB with the existing ones. WB series does not have series code. Some are identical; some differ by a scale (possibly due to exchange rate?); some do not exist in WB data.
+## Summary
 
 
-
-
-
+| Name | Code | Column in WB data| Alternative source | Comment| 
+|---|---|---|---|--------|
+|Gold | | |MB | OK|
+|Copper | | | MB| 260300.01 code has same trend but different values|
+|Aluminium | | |MB |OK|
+|Silver | | |MB |OK, differ by 100 times |
+|Nickel | | |MB |OK |
+|Zinc | | | |OK |
+|Platinum | |MB | |OK |
+|Lead | | |MB | OK|
+|Tin | | | MB| OK|
+|Manganese | | |MB |Not available in WB|
+|Iron |260100.02, 03 |- |TR | TR Only available from 2010.9 for both. WB uses code 02, can directly replace.|
 
 
 

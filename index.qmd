@@ -1,5 +1,5 @@
 ---
-title: "Commodity Price Index"
+title: "Trade and Development Notebook"
 #image: misc/logo_dan.png
 about:
   id: hero-heading
@@ -13,6 +13,6 @@ about:
 
 ::: {#hero-heading}
 
-This is the documentation website for Commodity Price Index automation.
+This is the documentation website for learning on Trade and Development.
 
 :::

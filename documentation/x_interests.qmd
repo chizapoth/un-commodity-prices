@@ -1,0 +1,96 @@
+---
+title: "Aspects of interest"
+description: |
+  
+#author: "Chi Zhang"
+#date: "2025-01-05"
+#categories: []
+sidebar: false
+code-block-bg: false
+code-block-border-left: true
+format: 
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    code-tools: false
+    highlight-style: gruvbox
+---
+
+
+> A few projects that could be interesting to learn more about. Need to be an overlap between skills to develop and data available. 
+
+## Commodity prices
+
+Monthly updated commodity prices using sources from World Bank, IMF. 
+
+To learn:
+
+* **Nowcasting?**
+
+::: {.callout-note}
+## Skills and impact
+
+:::
+
+Resources
+
+* [International commodity bodies](https://unctad.org/topic/commodities/international-commodity-bodies)
+* [Commodities and development report 2023](https://unctad.org/publication/commodities-and-development-report-2023)
+
+
+### Nowcasting
+
+Two papers: 
+
+* [Economic Nowcasting with LSTM ANN](https://unctad.org/system/files/official-document/ser-rp-2021d5_en.pdf)
+* [Benchmarking econometric and machine learning methodologies in nowcasting](https://unctad.org/publication/benchmarking-econometric-and-machine-learning-methodologies-nowcasting)
+
+Dashboard
+
+Dynamic factor models [nowcastDFM](https://github.com/dhopp1/nowcastDFM)
+
+
+
+## Data Hub API
+
+The data dashboard
+
+
+## Visualization palette (SDG)
+
+Inspired by [UNCTAD](https://unctadstat.unctad.org/EN/ProcessedFood.html) and UNHCR. (UNHCR has a few interesting packages!)
+
+
+
+
+## UNCTAD LLM
+
+UNCTAD internal system for RAG (retrieval-augmented generation)
+
+To learn: 
+
+* LLM in general
+* How the app is set up 
+
+::: {.callout-note}
+## Skills and impact
+
+
+
+:::
+
+
+
+
+## Services
+
+
+
+::: {.callout-note}
+## Skills and impact
+
+:::
+
+
+
