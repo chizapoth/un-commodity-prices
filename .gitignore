@@ -4,6 +4,8 @@
 .Ruserdata
 
 /.quarto/
-internal/*
-dev/*
 literature/*
+data-raw/*
+code_2024/*
+reports/*
+results/*

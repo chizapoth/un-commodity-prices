@@ -1,5 +1,5 @@
 ---
-title: "World Bank replacements"
+title: "Commodity price replacements"
 description: |
   
 #author: "Chi Zhang"
@@ -18,7 +18,7 @@ format:
 ---
 
 
-Motivation: replace the commodity products from their original sources by equivalent items from **World Bank (5110)**.
+Motivation: replace the commodity products from their original sources by equivalent items from **World Bank (5110)**, **IMF** etc.
 
 Abbreviations: 
 

@@ -8,7 +8,7 @@ about:
   links:
     - icon: github
       text: Github
-      href: https://github.com/andreaczhang/unctad-int
+      href: https://github.com/chizapoth/un-commodiy-prices
 ---
 
 ::: {#hero-heading}
