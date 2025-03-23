@@ -10,15 +10,15 @@ library(zoo)
 library(dplyr)
 
 # source the functions needed
-source('~/Documents/GitHub/unctad-int/dev_prices/code_chi/util.R')
+source('~/Documents/GitHub/un-commodity-prices/dev_prices/util.R')
 
 # set data paths
-read_path <- '~/Documents/GitHub/unctad-int/dev_prices/'
+read_path <- '~/Documents/GitHub/un-commodity-prices/data-raw/'
 dir_metadata <- 'metadata/'
 dir_datasource_2024 <- 'datasource_2024/'
 dir_datasource_2025 <- 'datasource_2025/'
 
-write_path <- '~/Documents/GitHub/unctad-int/dev_prices/results/'
+result_path <- '~/Documents/GitHub/un-commodity-prices/results/'
 
 
 
@@ -151,6 +151,7 @@ jute$datetime <- as.Date(jute$datetime)
 dcommodity <- left_join(wb_narrow, imf_narrow) |> 
   left_join(jute)
 
+
 colnames(dcommodity)
 
 # TO DO:
@@ -168,7 +169,7 @@ colnames(dcommodity)
 # head(test)
 
 # save for future use
-# write.xlsx(dcommodity, file = paste0(write_path, 'prices_2025_precheck.xlsx'))
+# write.xlsx(dcommodity, file = paste0(result_path, 'prices_2025_precheck.xlsx'))
 # write.csv(dcommodity, file = paste0(write_path, 'prices_2025_precheck.csv'))
 
 

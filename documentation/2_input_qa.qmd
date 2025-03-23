@@ -1,0 +1,521 @@
+---
+title: "Quality Assurance: Commodity Prices"
+format: 
+  html:
+   toc: true
+   toc-depth: 3
+   code-fold: false
+   code-tools: false
+   highlight-style: gruvbox
+#format:
+#  docx:
+#   toc: true
+#   toc-depth: 3
+#   reference-doc: template.docx
+#   number-sections: true
+#   highlight-style: github
+---
+
+
+> This is the development version in HTML, later convert to `word.docx`
+
+
+# Series with caution
+
+
+### Banana
+
+In the metadata, there are three codes for banana
+
+* if we use `080300.01`, the old source is also WB. Can use directly
+* in the old way to compile the price index, code `080300.03` is used, which comes from TR. This series is quite different from WB data.
+* another series `080300.02` also exists in WB
+
+
+### Rubber
+
+Rubber has two codes in WB, RSS3 and TR
+
+* RSS3 is available for all times
+* TSR20 is available from 1999.1.1. The old source is using TSR20 in the price index computation
+* We can either impute the historical TSR20, or use RSS3 instead, should not create big difference. 
+
+
+
+
+
+### Wool
+
+Historical data: `510100.02`, `510100.03` available from AWI
+
+* `510100.03` only from 2013. Fine wool
+* `510100.02` only available for very short period, can drop it
+
+New source: IMF has PWOOLF (fine) and PWOOLC (coarse) for all times. For the comparison, `510100.03` is compared with `PWOOLF`. For the period where they both exist, seem to overlap quite well. 
+
+For the purpose of computing the index, use `PWOOLF`.
+
+
+
+### Hides
+
+No comparison data, only IMF.
+
+Available for all times.
+
+
+### Jute
+
+Jute only has one data source, which is FAO. No other historical data exists. Just use this for the computation.
+
+Only available from 2004.
+
+
+### Manganese
+
+Historical data: 
+
+New source: IMF, available from 2012.6.1
+
+
+
+# Graphics 
+
+
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+library(ggplot2)
+library(dplyr)
+library(gt)
+result_path <- '~/Documents/GitHub/un-commodity-prices/results/'
+
+# load the functions
+source('~/Documents/GitHub/un-commodity-prices/dev_prices/util.R')
+```
+
+
+
+```{r}
+#| echo: false
+#| eval: true
+
+checklist <- openxlsx::read.xlsx(paste0(result_path, 'checklist.xlsx'))
+cl <- openxlsx::read.xlsx(paste0(result_path, 'checklist_report.xlsx'))
+
+tb2 <- gt(cl)
+
+tb2 <- cols_label(tb2, 
+                  description_short = 'Product', 
+                  series_id = 'Product ID', 
+                  data_source_2024_code = 'Data Source (2024)',
+                  data_source_2025_code = 'Data Source (2025)',
+                  value_match = 'Values matched?',
+                  availability_match = 'Availability matched?')
+tb2
+```
+
+
+
+
+
+```{r}
+#| eval: true
+#| echo: false
+# load data
+dcommodity <- openxlsx::read.xlsx(paste0(result_path, 'prices_2025_precheck.xlsx'))
+# datetime check and convert
+dcommodity$datetime <- check_date_convert(dcommodity$datetime)
+# comparison data
+dcompare <- readRDS(paste0(result_path, 'prices_2024_compare.rds'))
+```
+
+
+
+
+
+
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: salmon
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[1,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'banana'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[2,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'coffee-arabica'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[3,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'coffee-robusta'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[4,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'wheat'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[5,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'maize'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[6,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'sugar'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[7,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'cocoa'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[8,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'tobacco'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[9,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'ironore'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[10,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'manga99'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[11,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'copper'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[12,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'nickel'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[13,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'aluminum'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[14,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'lead'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[15,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'zinc'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[16,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'tin'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[17,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'silver'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[18,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'coal'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[19,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'rubber'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[20,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'hides'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[21,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'wool'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[22,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'jute'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[23,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'gold'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[24,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'platinum'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[25,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+# Appendix 1
+
+```{r}
+#| eval: true
+#| echo: false
+
+dir_metadata <- '~/Documents/GitHub/un-commodity-prices/data-raw/metadata/'
+
+source <- openxlsx::read.xlsx(paste0(dir_metadata, 'commodity_metadata.xlsx'), sheet = 'source')
+tb <- gt(source)
+# tab_header(tb, title = 'stuff')
+tb <- cols_label(tb, 
+           code = 'Code', 
+           label = 'Label', 
+           label_short = 'Label (short)')
+tb
+```
+
+
+
+# Appendix 2
+

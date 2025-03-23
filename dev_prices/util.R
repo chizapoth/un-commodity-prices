@@ -152,14 +152,16 @@ compute_weighted_price <- function(d_price, d_weight, product, rescale = T){
 # validate with old data ----
 
 
-merge_commodity_data <- function(data_new, data_old, info_target, series_id = NULL){
+merge_price_new_old <- function(data_new, data_old, info_target, series_id = NULL){
   
   # data_new <- dcommodity
   # data_old <- dcompare
-  commodity_name <- info_target$label_source_2025
+  commodity_name <- info_target$description_short
   commodity_desc <- info_target$description_long
   data_source_code_new <- info_target$data_source_2025_code
   commodity_series <- info_target$series_id
+  label_display <- info_target$label_display
+  
   # allow manually set
   if(!is.null(series_id)){
     commodity_series <- series_id
@@ -174,9 +176,7 @@ merge_commodity_data <- function(data_new, data_old, info_target, series_id = NU
   
   # attach the new data source code
   dnew$data_source <- data_source_code_new
-  # dnew$data_source_code <- data_source_code_new
-  # dnew$data_source_label <- data_source_label_new
-  
+
   # old
   dold <- filter(data_old, CommodityProduct == commodity_series) |> 
     select(datetime = dtime, 
@@ -184,6 +184,7 @@ merge_commodity_data <- function(data_new, data_old, info_target, series_id = NU
            data_source = DataSource)
   dold$datetime <- as.character(dold$datetime)
   
+  # put together
   dboth <- rbind(dnew, dold)
   dboth$data_source <- as.character(dboth$data_source)
   dboth$datetime <- as.Date(dboth$datetime)
@@ -195,6 +196,7 @@ merge_commodity_data <- function(data_new, data_old, info_target, series_id = NU
               commodity_name = commodity_name, 
               commodity_series = commodity_series, 
               commodity_desc = commodity_desc,
+              label_display = label_display,
               data_source_code_2025 = data_source_code_new))
   
 }
@@ -293,11 +295,11 @@ plot_comparison <- function(dobj){
   p <- p + geom_vline(xintercept = Sys.Date(), 
                       col = 'blue', 
                       linetype = 'dashed', 
-                      linewidth = 0.8)
+                      linewidth = 0.6)
   p <- p + labs(
     x = 'Datetime', 
     y = 'Price', 
-    title = dobj$commodity_name, # just for now 
+    title = dobj$label_display,
     subtitle = paste0('Name in original source: ', dobj$commodity_desc)
   )
   # make white background

@@ -4,14 +4,14 @@ project:
 
 website:
   page-navigation: true
-  title: "CPI"
+  title: "Commodity Prices Index"
 
   navbar:
     left:
       - href: index.qmd
         text: Home
 
-      - href: documentation/index.qmd
+      - href: doc_un/index.qmd
         text: Documentation
 
 
