@@ -2,6 +2,7 @@
 library(ggplot2)
 library(dplyr)
 library(data.table)
+library(openxlsx)
 source('~/Documents/GitHub/un-commodity-prices/dev_prices/util.R')
 
 # set data paths
@@ -28,7 +29,7 @@ set_newsource <- filter(metadata, check_two_sources == 'yes')
 # set_newsource$label_source_2025 <- gsub('\\*', '.', set_newsource$label_source_2025) # substitute the star (careful since it's wildcard)
 # set_newsource <- gsub('%', '.', wb_labels) # substitute the commas
 
-
+colnames(set_newsource)
 
 # create a copy of checklist in case needed
 checklist <- select(set_newsource, 
@@ -39,7 +40,9 @@ checklist <- select(set_newsource,
                     description_long,
                     unit_2024, 
                     data_source_2024_code,
+                    data_source_2024,
                     data_source_2025_code,
+                    data_source_2025,
                     label_source_2025,
                     label_display)
 
@@ -130,7 +133,7 @@ dcompare <- readRDS(paste0(result_path, 'prices_2024_compare.rds'))
 
 # validate one pair ----
 # this is how to use it
-info_target <- set_newsource[19,]
+info_target <- set_newsource[3,]
 info_target
 
 # dcompare |> filter(CommodityProduct == '400100.01')
@@ -143,8 +146,8 @@ dout <- merge_price_new_old(data_new = dcommodity,
 
 dout$dnew |> head()
 # dout$dold
-dout$dold
-dout$dnew
+# dout$dold
+# dout$dnew
 
 d <- dout
 p1 <- plot_comparison(dobj = d)
@@ -160,10 +163,12 @@ plot_facet(p1, target = 'data_source', free_scale = T)
 # dout$commodity_name
 
 
+# table individual product ----
+library(gt)
+info_target |> t() |> data.frame() |> gt()
 
-
-
-
+info_target
+make_commodity_infocard(set_newsource[4,])
 
 
 # streamline if needed ----# 

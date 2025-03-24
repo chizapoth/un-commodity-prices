@@ -300,7 +300,7 @@ plot_comparison <- function(dobj){
     x = 'Datetime', 
     y = 'Price', 
     title = dobj$label_display,
-    subtitle = paste0('Name in original source: ', dobj$commodity_desc)
+    subtitle = paste0('Original scale')
   )
   # make white background
   p <- p + theme_bw() 
@@ -337,12 +337,58 @@ plot_facet <- function(pltobj, target, free_scale = F){
                                      independent = "y")
     
   }
-  
+  p <- p + labs(subtitle = 'Adjusted units')
   return(p)
 }
 
 
 
+
+# tables ----
+
+make_commodity_infocard <- function(info_target){
+  # info_target <- info_target
+  
+  index_sort <-info_target$index_sort
+  series_id <- info_target$series_id
+  description_label <- info_target$label_display
+  description_short <- info_target$description_short
+  description_long <- info_target$description_long
+  unit_2024 <- info_target$unit_2024
+  # combine a few columns
+  data_source_2024 <- paste(info_target$data_source_2024_code, 
+                            info_target$data_source_2024)
+  data_source_2025 <- paste(info_target$data_source_2025_code, 
+                            info_target$data_source_2025)
+  
+  # put together
+  d <- rbind(description_label, 
+             description_short,
+             index_sort, 
+             series_id,
+             description_long,
+             unit_2024,
+             data_source_2024,
+             data_source_2025)
+  
+  rn <- rbind('Description', 
+              'Description (code)',
+              'Index sort',
+              'Product ID',
+              'Description (as of 2024)',
+              'Unit (as of 2024)',
+              'Data source (2024)',
+              'Data source (2025)') 
+  dw <- data.frame(cbind(rn, d))
+  
+  # make the column name as the first row, then remove it
+  colnames(dw) <- dw[1,]
+  dw <- dw[-1,]
+  # make gt
+  
+  tb <- gt(dw)
+  return(tb)
+}
 
 
 

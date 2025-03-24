@@ -20,66 +20,15 @@ format:
 > This is the development version in HTML, later convert to `word.docx`
 
 
-# Series with caution
+## Overview
 
+In the table below we list a summary of commodity products whose data sources are changed. The majority of the products can use the new sources without issues. Some have inconsistent values and/or time period availability: 
 
-### Banana
+* Values match, while some time periods are missing: **iron ore, manganese, rubber, wool (fine)**. In the computation of index, we either use omit the missing period in the new source, or impute with historical data from another source.
+* Time periods are all available, while values differ. This can be due to different units, exchange rates or unknown reasons. After adjustment, the difference do not affect the index computation much.
+* Historical comparison data from old sources are unavailable.
 
-In the metadata, there are three codes for banana
-
-* if we use `080300.01`, the old source is also WB. Can use directly
-* in the old way to compile the price index, code `080300.03` is used, which comes from TR. This series is quite different from WB data.
-* another series `080300.02` also exists in WB
-
-
-### Rubber
-
-Rubber has two codes in WB, RSS3 and TR
-
-* RSS3 is available for all times
-* TSR20 is available from 1999.1.1. The old source is using TSR20 in the price index computation
-* We can either impute the historical TSR20, or use RSS3 instead, should not create big difference. 
-
-
-
-
-
-### Wool
-
-Historical data: `510100.02`, `510100.03` available from AWI
-
-* `510100.03` only from 2013. Fine wool
-* `510100.02` only available for very short period, can drop it
-
-New source: IMF has PWOOLF (fine) and PWOOLC (coarse) for all times. For the comparison, `510100.03` is compared with `PWOOLF`. For the period where they both exist, seem to overlap quite well. 
-
-For the purpose of computing the index, use `PWOOLF`.
-
-
-
-### Hides
-
-No comparison data, only IMF.
-
-Available for all times.
-
-
-### Jute
-
-Jute only has one data source, which is FAO. No other historical data exists. Just use this for the computation.
-
-Only available from 2004.
-
-
-### Manganese
-
-Historical data: 
-
-New source: IMF, available from 2012.6.1
-
-
-
-# Graphics 
+Please go to the details for each product for more information. The data source corresponding to the 4-digit code can be found in Appendix 1. 
 
 
 ```{r}
@@ -120,6 +69,15 @@ tb2
 
 
 
+
+
+
+
+## Commodity product details
+
+In this section we provide the details on each commodity. They are ordered based on the 8-digit product ID, as shown in the table above. 
+
+
 ```{r}
 #| eval: true
 #| echo: false
@@ -133,11 +91,7 @@ dcompare <- readRDS(paste0(result_path, 'prices_2024_compare.rds'))
 
 
 
-
-
-
-
-
+### Fish (Salmon)
 
 ```{r}
 #| echo: false
@@ -147,11 +101,18 @@ dcompare <- readRDS(paste0(result_path, 'prices_2024_compare.rds'))
 d <- merge_price_new_old(data_new = dcommodity, 
                           data_old = dcompare, 
                           info_target = checklist[1,])
-
+make_commodity_infocard(checklist[1,])
 p <- plot_comparison(dobj = d)
 p
 ```
 
+### Banana
+
+In the metadata, there are three codes for banana
+
+* if we use `080300.01`, the old source is also WB. Can use directly
+* in the old way to compile the price index, code `080300.03` is used, which comes from TR. This series is quite different from WB data.
+* another series `080300.02` also exists in WB
 
 
 
@@ -169,6 +130,8 @@ p
 ```
 
 
+### Coffee
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -180,6 +143,7 @@ d <- merge_price_new_old(data_new = dcommodity,
 
 p <- plot_comparison(dobj = d)
 p
+plot_facet(p, target = 'data_source', free_scale = T)
 ```
 
 
@@ -195,9 +159,10 @@ d <- merge_price_new_old(data_new = dcommodity,
 
 p <- plot_comparison(dobj = d)
 p
+plot_facet(p, target = 'data_source', free_scale = T)
 ```
 
-
+### Wheat
 
 ```{r}
 #| echo: false
@@ -212,6 +177,7 @@ p <- plot_comparison(dobj = d)
 p
 ```
 
+### Maize
 
 ```{r}
 #| echo: false
@@ -226,6 +192,7 @@ p <- plot_comparison(dobj = d)
 p
 ```
 
+### Sugar
 
 ```{r}
 #| echo: false
@@ -238,9 +205,10 @@ d <- merge_price_new_old(data_new = dcommodity,
 
 p <- plot_comparison(dobj = d)
 p
+plot_facet(p, target = 'data_source', free_scale = T)
 ```
 
-
+### Cocoa
 
 ```{r}
 #| echo: false
@@ -253,9 +221,10 @@ d <- merge_price_new_old(data_new = dcommodity,
 
 p <- plot_comparison(dobj = d)
 p
+plot_facet(p, target = 'data_source', free_scale = T)
 ```
 
-
+### Tobacco
 
 ```{r}
 #| echo: false
@@ -271,7 +240,7 @@ p
 ```
 
 
-
+### Iron ore
 
 ```{r}
 #| echo: false
@@ -284,7 +253,18 @@ d <- merge_price_new_old(data_new = dcommodity,
 
 p <- plot_comparison(dobj = d)
 p
+plot_facet(p, target = 'data_source', free_scale = T)
 ```
+
+### Manganese
+
+Historical data: 
+
+New source: IMF, available from 2012.6.1
+
+
+
+
 
 ```{r}
 #| echo: false
@@ -297,9 +277,10 @@ d <- merge_price_new_old(data_new = dcommodity,
 
 p <- plot_comparison(dobj = d)
 p
+plot_facet(p, target = 'data_source', free_scale = T)
 ```
 
-
+### Copper
 
 ```{r}
 #| echo: false
@@ -312,9 +293,10 @@ d <- merge_price_new_old(data_new = dcommodity,
 
 p <- plot_comparison(dobj = d)
 p
+plot_facet(p, target = 'data_source', free_scale = T)
 ```
 
-
+### Nickel
 
 ```{r}
 #| echo: false
@@ -329,7 +311,7 @@ p <- plot_comparison(dobj = d)
 p
 ```
 
-
+### Aluminum
 
 ```{r}
 #| echo: false
@@ -344,6 +326,8 @@ p <- plot_comparison(dobj = d)
 p
 ```
 
+### Lead
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -357,6 +341,7 @@ p <- plot_comparison(dobj = d)
 p
 ```
 
+### Zinc
 
 ```{r}
 #| echo: false
@@ -371,7 +356,7 @@ p <- plot_comparison(dobj = d)
 p
 ```
 
-
+### Tin
 
 ```{r}
 #| echo: false
@@ -386,6 +371,7 @@ p <- plot_comparison(dobj = d)
 p
 ```
 
+### Silver
 
 ```{r}
 #| echo: false
@@ -398,7 +384,10 @@ d <- merge_price_new_old(data_new = dcommodity,
 
 p <- plot_comparison(dobj = d)
 p
+plot_facet(p, target = 'data_source', free_scale = T)
 ```
+
+### Coal
 
 ```{r}
 #| echo: false
@@ -412,6 +401,17 @@ d <- merge_price_new_old(data_new = dcommodity,
 p <- plot_comparison(dobj = d)
 p
 ```
+
+### Rubber
+
+
+Rubber has two codes in WB, RSS3 and TR
+
+* RSS3 is available for all times
+* TSR20 is available from 1999.1.1. The old source is using TSR20 in the price index computation
+* We can either impute the historical TSR20, or use RSS3 instead, should not create big difference. 
+
+
 
 ```{r}
 #| echo: false
@@ -428,6 +428,12 @@ p
 
 
 
+### Hides
+
+No comparison data, only IMF.
+
+Available for all times.
+
 
 ```{r}
 #| echo: false
@@ -442,6 +448,21 @@ p <- plot_comparison(dobj = d)
 p
 ```
 
+
+
+### Wool
+
+Historical data: `510100.02`, `510100.03` available from AWI
+
+* `510100.03` only from 2013. Fine wool
+* `510100.02` only available for very short period, can drop it
+
+New source: IMF has PWOOLF (fine) and PWOOLC (coarse) for all times. For the comparison, `510100.03` is compared with `PWOOLF`. For the period where they both exist, seem to overlap quite well. 
+
+For the purpose of computing the index, use `PWOOLF`.
+
+
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -453,7 +474,14 @@ d <- merge_price_new_old(data_new = dcommodity,
 
 p <- plot_comparison(dobj = d)
 p
+plot_facet(p, target = 'data_source', free_scale = T)
 ```
+
+### Jute
+
+Jute only has one data source, which is FAO. No other historical data exists. Just use this for the computation.
+
+Only available from 2004.
 
 
 ```{r}
@@ -469,6 +497,8 @@ p <- plot_comparison(dobj = d)
 p
 ```
 
+### Gold
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -480,9 +510,10 @@ d <- merge_price_new_old(data_new = dcommodity,
 
 p <- plot_comparison(dobj = d)
 p
+plot_facet(p, target = 'data_source', free_scale = T)
 ```
 
-
+### Platinum
 
 ```{r}
 #| echo: false
@@ -495,6 +526,7 @@ d <- merge_price_new_old(data_new = dcommodity,
 
 p <- plot_comparison(dobj = d)
 p
+plot_facet(p, target = 'data_source', free_scale = T)
 ```
 
 # Appendix 1
@@ -517,5 +549,5 @@ tb
 
 
 
-# Appendix 2
+
 
