@@ -263,7 +263,7 @@
     "href": "documentation/2_input_qa.html",
     "title": "Quality Assurance: Commodity Prices",
     "section": "",
-    "text": "This is the development version in HTML, later convert to word.docx"
+    "text": "TO DO\n\n\n\n\nVisualize the standardized price series for those with unit changes: use 2015 average as basis\nadd note on the missing time periods for those with missing times"
   },
   {
     "objectID": "notes/todo_list.html",
@@ -446,5 +446,47 @@
     "title": "Quality Assurance: Commodity Prices",
     "section": "Commodity product details",
     "text": "Commodity product details\nIn this section we provide the details on each commodity. They are ordered based on the 8-digit product ID, as shown in the table above.\n\nFish (Salmon)\n\n\n\n\n\n\n\n\n\nDescription\nFish (Salmon)\n\n\n\n\nDescription (code)\nfish_salmon\n\n\nIndex sort\n1010\n\n\nProduct ID\n030212.01\n\n\nDescription (as of 2024)\nSalmon, fresh, fish-farm bred, export price, Norway ($/kg)\n\n\nUnit (as of 2024)\nusd_per_kg\n\n\nData source (2024)\n7801 Statistics Norway\n\n\nData source (2025)\n2311 IMF - Primary Commodity Prices\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBanana\nIn the metadata, there are three codes for banana\n\nif we use 080300.01, the old source is also WB. Can use directly\nin the old way to compile the price index, code 080300.03 is used, which comes from TR. This series is quite different from WB data.\nanother series 080300.02 also exists in WB\n\n\n\n\n\n\n\n\n\n\n\n\nCoffee\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWheat\n\n\n\n\n\n\n\n\n\n\n\nMaize\n\n\n\n\n\n\n\n\n\n\n\nSugar\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCocoa\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTobacco\n\n\n\n\n\n\n\n\n\n\n\nIron ore\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nManganese\nHistorical data:\nNew source: IMF, available from 2012.6.1\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCopper\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNickel\n\n\n\n\n\n\n\n\n\n\n\nAluminum\n\n\n\n\n\n\n\n\n\n\n\nLead\n\n\n\n\n\n\n\n\n\n\n\nZinc\n\n\n\n\n\n\n\n\n\n\n\nTin\n\n\n\n\n\n\n\n\n\n\n\nSilver\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCoal\n\n\n\n\n\n\n\n\n\n\n\nRubber\nRubber has two codes in WB, RSS3 and TR\n\nRSS3 is available for all times\nTSR20 is available from 1999.1.1. The old source is using TSR20 in the price index computation\nWe can either impute the historical TSR20, or use RSS3 instead, should not create big difference.\n\n\n\n\n\n\n\n\n\n\n\n\nHides\nNo comparison data, only IMF.\nAvailable for all times.\n\n\n\n\n\n\n\n\n\n\n\nWool\nHistorical data: 510100.02, 510100.03 available from AWI\n\n510100.03 only from 2013. Fine wool\n510100.02 only available for very short period, can drop it\n\nNew source: IMF has PWOOLF (fine) and PWOOLC (coarse) for all times. For the comparison, 510100.03 is compared with PWOOLF. For the period where they both exist, seem to overlap quite well.\nFor the purpose of computing the index, use PWOOLF.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nJute\nJute only has one data source, which is FAO. No other historical data exists. Just use this for the computation.\nOnly available from 2004.\n\n\n\n\n\n\n\n\n\n\n\nGold\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPlatinum"
+  },
+  {
+    "objectID": "documentation/2_input_qa.html#overall-group",
+    "href": "documentation/2_input_qa.html#overall-group",
+    "title": "Quality Assurance: Commodity Prices",
+    "section": "Overall group",
+    "text": "Overall group"
+  },
+  {
+    "objectID": "documentation/2_input_qa.html#subgroups",
+    "href": "documentation/2_input_qa.html#subgroups",
+    "title": "Quality Assurance: Commodity Prices",
+    "section": "Subgroups",
+    "text": "Subgroups"
+  },
+  {
+    "objectID": "documentation/2_input_qa.html#subgroups-food-and-agricultural",
+    "href": "documentation/2_input_qa.html#subgroups-food-and-agricultural",
+    "title": "Quality Assurance: Commodity Prices",
+    "section": "Subgroups: food and agricultural",
+    "text": "Subgroups: food and agricultural"
+  },
+  {
+    "objectID": "documentation/2_input_qa.html#subgroups-metal",
+    "href": "documentation/2_input_qa.html#subgroups-metal",
+    "title": "Quality Assurance: Commodity Prices",
+    "section": "Subgroups: metal",
+    "text": "Subgroups: metal"
+  },
+  {
+    "objectID": "documentation/2_input_qa.html#subgroups-fuels",
+    "href": "documentation/2_input_qa.html#subgroups-fuels",
+    "title": "Quality Assurance: Commodity Prices",
+    "section": "Subgroups: fuels",
+    "text": "Subgroups: fuels"
+  },
+  {
+    "objectID": "documentation/2_input_qa.html#subgroups-combinations",
+    "href": "documentation/2_input_qa.html#subgroups-combinations",
+    "title": "Quality Assurance: Commodity Prices",
+    "section": "Subgroups: combinations",
+    "text": "Subgroups: combinations"
   }
 ]

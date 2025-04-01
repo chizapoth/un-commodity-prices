@@ -146,10 +146,84 @@ compute_weighted_price <- function(d_price, d_weight, product, rescale = T){
 }
 
 
+compute_scaled_weight <- function(d_weight_unscaled){
+  # d_weight_unscaled <- m
+  # only select the unduplicated
+  # dplyr::filter(d_weight_unscaled, share_scale != 1)
+  mn <- dplyr::filter(d_weight_unscaled, share_scale == 1)
+  mn$s_rescale <- mn$s / sum(mn$s)
+  
+  # coffee
+  if('coffee_robusta' %in% d_weight_unscaled$description_short){
+    coffee_arabica <- dplyr::filter(mn, description_short == 'coffee_arabica')
+    coffee_robusta <- dplyr::filter(d_weight_unscaled, description_short == 'coffee_robusta')
+    coffee_robusta$s_rescale <- coffee_arabica$s_rescale  
+    # attach back
+    mn <- rbind(mn, coffee_robusta)
+  }
+  
+  # oil
+  if('crude_oil_dubai' %in% d_weight_unscaled$description_short){
+    crude_oil_brent <- dplyr::filter(mn, description_short == 'crude_oil_brent')
+    crude_oil_dubai <- dplyr::filter(d_weight_unscaled, description_short == 'crude_oil_dubai')
+    crude_oil_dubai$s_rescale <- crude_oil_brent$s_rescale  
+    # attach back
+    mn <- rbind(mn, crude_oil_dubai)
+  }
+  return(mn)
+}
 
 
 
-# validate with old data ----
+
+
+compile_index <- function(d_price, d_weight_unscaled, commodity_group){
+  
+  info <- commodity_group$target_group_info
+  select_group_from <- commodity_group$weight_ref_column
+  commodity_groups <- commodity_group$commodity_groups
+  
+  m <- dplyr::filter(d_weight_unscaled, 
+                     .data[[select_group_from]] %in% commodity_groups)
+  
+  # rescale the m weights
+  # m$s_rescale <- m$s / sum(m$s)
+  ms <- compute_scaled_weight(m)
+  
+  products <- ms$description_short
+  reslist <- list()
+  cat('compute index for group: ', info$group_name, '\n')
+  
+  for(i in 1:length(products)){
+    reslist[[i]] <- compute_weighted_price(
+      d_price = d_price,
+      d_weight = ms,
+      product = products[i],
+      rescale = T
+    )
+    cat('processing product ', i, ': ',products[i], '\n')
+  }
+  
+  names(reslist) <- products
+  
+  # put together
+  list_weighted <- purrr::map(reslist, function(x){x$d_weighted})
+  mat_weighted <- do.call(cbind, list_weighted)
+  
+  # compute index (omit missing)
+  index <- apply(mat_weighted, 1, function(x)(sum(x, na.rm = T)))
+  
+  return(list(
+    weight_matrix = m, 
+    info = info,
+    index = index
+  ))
+}
+
+
+
+
+# validate with single  ----
 
 
 merge_price_new_old <- function(data_new, data_old, info_target, series_id = NULL){
@@ -203,7 +277,7 @@ merge_price_new_old <- function(data_new, data_old, info_target, series_id = NUL
 
 
 
-# validate with index ----
+# validate with compiled index ----
 
 query_commodity_group <- function(target_group_info){
   
@@ -278,7 +352,33 @@ query_commodity_group <- function(target_group_info){
 }
 
 
+process_historic_time <- function(time_vec){
+  # time_vec <- price_public$Period_Label
+  year <- as.numeric(substr(time_vec, 6, 9))
+  # month: only use the first 3 letters
+  month_chr <- substr(time_vec, 1, 3)
+  month_ref <- substr(month.name, 1,3) # built in
+  # match the ref, convert to number
+  month_num <- match(month_chr, month_ref)
+  # put together
+  time <- paste0(year, "M", month_num)
+  datetime <- as.Date(as.yearmon(time, "%YM%m"))
+  datetime <- as.character(datetime)
+  
+  return(datetime)
+}
 
+
+
+extract_historic_single <- function(data, public_name, new_name){
+  # data <- price_public
+  # public_name <- "All.groups_Index_Base_2015_Value"
+  # new_name <- 'all'
+  series <- data[public_name]
+  # change to a better name
+  colnames(series) <- new_name
+  return(series)
+}
 
 # plots ----
 
@@ -339,6 +439,50 @@ plot_facet <- function(pltobj, target, free_scale = F){
   }
   p <- p + labs(subtitle = 'Adjusted units')
   return(p)
+}
+
+plot_index_comparison <- function(data, tag, title){
+  # tag <- 'all'
+  # title <- 'All commodities'
+  # data <- indices_both
+  pd <- filter(data, name == tag)
+  
+  p <- ggplot(pd, aes(x = datetime, 
+                      y = value, 
+                      colour = type))
+  p <- p + geom_line(linewidth =0.8)
+  # add 'today'
+  p <- p + geom_vline(xintercept = Sys.Date(), 
+                      col = 'blue', 
+                      linetype = 'dashed', 
+                      linewidth = 0.6)
+  p <- p + labs(
+    x = 'Datetime', 
+    y = 'Index', 
+    title = title# ,
+    # subtitle = paste0('Original scale')
+  )
+  # make white background
+  p <- p + theme_bw() 
+  # change text size
+  p <- p + theme(
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 10), 
+    plot.title = element_text(size = 12), 
+    plot.subtitle = element_text(size = 10),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5),
+    legend.position = 'bottom', # keep legend
+    legend.title = element_blank()
+  )
+  # adjust plotting of time
+  p <- p + scale_x_date(date_breaks = "3 year", date_labels = "%Y")
+  # change color
+  p <- p + scale_color_brewer(palette = 'Set2')
+  # p <- p + facet_wrap(~data_source, nrow = 3)
+  return(p)
+  
 }
 
 
