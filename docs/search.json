@@ -263,7 +263,7 @@
     "href": "documentation/2_input_qa.html",
     "title": "Quality Assurance: Commodity Prices",
     "section": "",
-    "text": "TO DO\n\n\n\n\nVisualize the standardized price series for those with unit changes: use 2015 average as basis\nadd note on the missing time periods for those with missing times"
+    "text": "TO DO\n\n\n\n\nMissing handling: take into account the unit difference. Given that most series are in the past, is it still necessary to impute?"
   },
   {
     "objectID": "notes/todo_list.html",

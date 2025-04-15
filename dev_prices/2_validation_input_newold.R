@@ -133,7 +133,7 @@ dcompare <- readRDS(paste0(result_path, 'prices_2024_compare.rds'))
 
 # validate one pair ----
 # this is how to use it
-info_target <- set_newsource[3,]
+info_target <- set_newsource[10,]
 info_target
 
 # dcompare |> filter(CommodityProduct == '400100.01')
@@ -150,17 +150,32 @@ dout$dnew |> head()
 # dout$dnew
 
 d <- dout
-p1 <- plot_comparison(dobj = d)
+p1 <- plot_comparison_price(dobj = d)
 p1
 
 
 
 # if needed
 # p1 + facet_wrap(~data_source, nrow = 3, scale = 'free')
-plot_facet(p1, target = 'data_source', free_scale = F)
-plot_facet(p1, target = 'data_source', free_scale = T)
+# plot_facet(p1, target = 'data_source', free_scale = F)
+# plot_facet(p1, target = 'data_source', free_scale = T)
 
 # dout$commodity_name
+
+# plot for the standardized (both)
+plot_comparison_price_facet(dobj = d)
+plot_comparison_price_facet(dobj = d, free_scale = T)
+
+
+# 2 things to fix
+# use pre-computed 2015 basis
+# keep y axis
+
+
+
+
+
+
 
 
 # table individual product ----

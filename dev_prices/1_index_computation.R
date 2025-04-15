@@ -8,6 +8,7 @@ library(jsonlite)
 library(httr)
 library(zoo)
 library(dplyr)
+library(naniar) # missing data vis
 
 # source the functions needed
 source('~/Documents/GitHub/un-commodity-prices/dev_prices/util.R')
@@ -36,10 +37,16 @@ head(metadata)
 # also do necessary processing, such as datetime
 # this needs to be replaced with URL
 
-wb_raw <- read.xlsx(paste0(read_path, 
-                           dir_datasource_2025, 
-                           "CMO-Historical-Data-Monthly.xlsx"), 
-                          sheet = "Monthly Prices", startRow = 5)
+wb_link <- 'https://thedocs.worldbank.org/en/doc/18675f1d1639c7a34d463f59263ba0a2-0050012025/related/CMO-Historical-Data-Monthly.xlsx'
+
+# wb_raw <- read.xlsx(paste0(read_path, 
+#                            dir_datasource_2025, 
+#                            "CMO-Historical-Data-Monthly.xlsx"), 
+#                           sheet = "Monthly Prices", startRow = 5)
+
+wb_raw <- read.xlsx(wb_link, 
+                    sheet = "Monthly Prices", startRow = 5)
+
 
 # print the column names and location
 wb_var <- get_info_wb(wb_raw)
@@ -78,15 +85,22 @@ colnames(wb_narrow)[5:ncol(wb_narrow)]
 colnames(wb_narrow)[5:ncol(wb_narrow)] <- wb_info$description_short
 
 
-# TO DO: ----# 
-# create identifiers without special characters
-# for easy computation of index
-
 
 
 # 2311 IMF ----
 
-imf_raw <- read_excel(paste0(read_path, dir_datasource_2025, "imf.xls"))
+imf_link <- 'https://www.imf.org/-/media/Files/Research/CommodityPrices/Monthly/external-data.ashx'
+
+# to use the link, need to first download the data
+# can not direclty import the excel sheet since it's ashx format
+imf_loc <- tempfile()
+download.file(imf_link, imf_loc)
+
+# to read xls requires readxl::read_excel
+# imf_raw <- read_excel(paste0(read_path, dir_datasource_2025, "imf.xls"))
+
+imf_raw <- read_excel(path = imf_loc)
+
 
 # check variables
 imf_var <- get_info_imf(imf_raw)
@@ -154,8 +168,49 @@ dcommodity <- left_join(wb_narrow, imf_narrow) |>
 
 colnames(dcommodity)
 
-# TO DO:
-# some basic information about the results at this step
+
+
+# basic info ----
+# two aspects: last updated time + missing
+# if missing a lot, also backfill with historical data
+
+
+head(dcommodity)
+
+
+# visualise which series are missing
+commodity_only <- select(dcommodity, -c(year, period, time, datetime))
+vis_miss(commodity_only) 
+
+
+# more details for the missing series
+check_missing_period(data = dcommodity, tag = 'shrimps_mex')
+check_missing_period(data = dcommodity, tag = 'sunflower_oil')
+check_missing_period(data = dcommodity, tag = 'palmkernel_oil')
+check_missing_period(data = dcommodity, tag = 'rubber_tsr20')
+check_missing_period(data = dcommodity, tag = 'manganese_99')
+check_missing_period(data = dcommodity, tag = 'jute')
+
+
+
+# these require backfill
+dcompare <- readRDS(paste0(result_path, 'prices_2024_compare.rds'))
+head(dcompare)
+
+# find a way to match the products then fill in the missing data
+d <- merge_price_new_old(data_new = dcommodity, 
+                         data_old = dcompare, 
+                         info_target = checklist[1,])
+
+
+checklist <- openxlsx::read.xlsx(paste0(result_path, 'checklist.xlsx'))
+# backfill_missing <- function(data_old)
+# consideration: unit difference have to be dealt with 
+
+
+
+
+
 
 
 # trouble shooting

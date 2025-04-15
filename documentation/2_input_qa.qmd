@@ -1,27 +1,26 @@
 ---
 title: "Quality Assurance: Commodity Prices"
-#format: 
-#  html:
-#   toc: true
-#   toc-depth: 3
-#   code-fold: false
-#   code-tools: false
-#   highlight-style: gruvbox
-format:
-  docx:
+format: 
+  html:
    toc: true
    toc-depth: 3
-   reference-doc: template.docx
-   number-sections: true
-   highlight-style: github
+   code-fold: false
+   code-tools: false
+   highlight-style: gruvbox
+#format:
+#  docx:
+#   toc: true
+#   toc-depth: 3
+#   reference-doc: template.docx
+#   number-sections: true
+#   highlight-style: github
 ---
 
 
 ::: {.callout-note}
 ## TO DO
 
-* Visualize the standardized price series for those with unit changes: use 2015 average as basis
-* add note on the missing time periods for those with missing times
+* Missing handling: take into account the unit difference. Given that most series are in the past, is it still necessary to impute?
 
 :::
 
@@ -240,8 +239,7 @@ d <- merge_price_new_old(data_new = dcommodity,
                           data_old = dcompare, 
                           info_target = checklist[1,])
 make_commodity_infocard(checklist[1,])
-p <- plot_comparison(dobj = d)
-p
+plot_comparison_price(dobj = d)
 ```
 
 ### Banana
@@ -263,8 +261,7 @@ d <- merge_price_new_old(data_new = dcommodity,
                           data_old = dcompare, 
                           info_target = checklist[2,])
 make_commodity_infocard(checklist[2,])
-p <- plot_comparison(dobj = d)
-p
+plot_comparison_price(dobj = d)
 ```
 
 
@@ -280,9 +277,8 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[3,])
 make_commodity_infocard(checklist[3,])
 
-p <- plot_comparison(dobj = d)
-p
-plot_facet(p, target = 'data_source', free_scale = T)
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
 ```
 
 
@@ -297,9 +293,8 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[4,])
 make_commodity_infocard(checklist[4,])
 
-p <- plot_comparison(dobj = d)
-p
-plot_facet(p, target = 'data_source', free_scale = T)
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
 ```
 
 ### Wheat
@@ -314,8 +309,7 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[5,])
 make_commodity_infocard(checklist[5,])
 
-p <- plot_comparison(dobj = d)
-p
+plot_comparison_price(dobj = d)
 ```
 
 ### Maize
@@ -330,8 +324,7 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[6,])
 make_commodity_infocard(checklist[6,])
 
-p <- plot_comparison(dobj = d)
-p
+plot_comparison(dobj = d)
 ```
 
 ### Sugar
@@ -346,9 +339,8 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[7,])
 make_commodity_infocard(checklist[7,])
 
-p <- plot_comparison(dobj = d)
-p
-plot_facet(p, target = 'data_source', free_scale = T)
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
 ```
 
 ### Cocoa
@@ -363,9 +355,8 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[8,])
 make_commodity_infocard(checklist[8,])
 
-p <- plot_comparison(dobj = d)
-p
-plot_facet(p, target = 'data_source', free_scale = T)
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
 ```
 
 ### Tobacco
@@ -380,8 +371,7 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[9,])
 make_commodity_infocard(checklist[9,])
 
-p <- plot_comparison(dobj = d)
-p
+plot_comparison(dobj = d)
 ```
 
 
@@ -397,9 +387,9 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[10,])
 make_commodity_infocard(checklist[10,])
 
-p <- plot_comparison(dobj = d)
-p
-plot_facet(p, target = 'data_source', free_scale = T)
+plot_comparison_price(dobj = d)
+# plot_comparison_price_facet(dobj = d)
+plot_comparison_price_facet(dobj = d, free_scale = T)
 ```
 
 ### Manganese
@@ -418,9 +408,9 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[11,])
 make_commodity_infocard(checklist[11,])
 
-p <- plot_comparison(dobj = d)
-p
-plot_facet(p, target = 'data_source', free_scale = T)
+plot_comparison_price(dobj = d)
+# plot_comparison_price_facet(dobj = d)
+plot_comparison_price_facet(dobj = d, free_scale = T)
 ```
 
 ### Copper
@@ -435,9 +425,8 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[12,])
 make_commodity_infocard(checklist[12,])
 
-p <- plot_comparison(dobj = d)
-p
-plot_facet(p, target = 'data_source', free_scale = T)
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
 ```
 
 ### Nickel
@@ -452,8 +441,7 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[13,])
 make_commodity_infocard(checklist[13,])
 
-p <- plot_comparison(dobj = d)
-p
+plot_comparison(dobj = d)
 ```
 
 ### Aluminum
@@ -468,8 +456,7 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[14,])
 make_commodity_infocard(checklist[14,])
 
-p <- plot_comparison(dobj = d)
-p
+plot_comparison(dobj = d)
 ```
 
 ### Lead
@@ -484,8 +471,7 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[15,])
 make_commodity_infocard(checklist[15,])
 
-p <- plot_comparison(dobj = d)
-p
+plot_comparison(dobj = d)
 ```
 
 ### Zinc
@@ -500,8 +486,7 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[16,])
 make_commodity_infocard(checklist[16,])
 
-p <- plot_comparison(dobj = d)
-p
+plot_comparison(dobj = d)
 ```
 
 ### Tin
@@ -532,9 +517,8 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[18,])
 make_commodity_infocard(checklist[18,])
 
-p <- plot_comparison(dobj = d)
-p
-plot_facet(p, target = 'data_source', free_scale = T)
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
 ```
 
 ### Coal
@@ -626,9 +610,8 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[22,])
 make_commodity_infocard(checklist[22,])
 
-p <- plot_comparison(dobj = d)
-p
-plot_facet(p, target = 'data_source', free_scale = T)
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
 ```
 
 ### Jute
@@ -664,9 +647,8 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[24,])
 make_commodity_infocard(checklist[24,])
 
-p <- plot_comparison(dobj = d)
-p
-plot_facet(p, target = 'data_source', free_scale = T)
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
 ```
 
 ### Platinum
@@ -681,9 +663,8 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[25,])
 make_commodity_infocard(checklist[25,])
 
-p <- plot_comparison(dobj = d)
-p
-plot_facet(p, target = 'data_source', free_scale = T)
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
 ```
 
 # Appendix 1

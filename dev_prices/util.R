@@ -111,6 +111,26 @@ check_date_convert <- function(x){
 
 
 
+
+check_missing_period <- function(data, tag){
+  # data <- dcommodity
+  # tag <- 'shrimps_mex'
+  
+  d_select <- select(data, datetime, all_of(tag))
+  missing_datetime <- d_select$datetime[which(is.na(d_select[[tag]]))]
+  n_missing <- length(missing_datetime)
+  perc_missing <- n_missing / nrow(d_select)
+  
+  return(list(
+    missing_datetime = missing_datetime, 
+    n_missing = n_missing,
+    perc_missing = perc_missing
+  ))
+  
+}
+
+
+
 # compute index ----
 
 
@@ -384,8 +404,13 @@ extract_historic_single <- function(data, public_name, new_name){
 
 
 
-plot_comparison <- function(dobj){
+
+
+plot_comparison_price <- function(dobj){
   
+  # dobj <- d
+  
+  # by default plot together
   pd <- dobj$dboth
   p <- ggplot(pd, aes(x = datetime, 
                       y = value, 
@@ -420,26 +445,91 @@ plot_comparison <- function(dobj){
   # change color
   p <- p + scale_color_brewer(palette = 'Set1')
   # p <- p + facet_wrap(~data_source, nrow = 3)
+  
   return(p)
   
 }
 
-
-plot_facet <- function(pltobj, target, free_scale = F){
+plot_comparison_price_facet <- function(dobj, free_scale = F){
   
-  # use .data[[colname]] to pass on customized names
-  # p <- pltobj + facet_wrap( ~ .data[[target]])
-  p <- pltobj + facet_grid(rows = vars(.data[[target]]))
+  # dobj <- d
+  
   if(free_scale == T){
-    # p <- pltobj + facet_wrap( ~ .data[[target]], nrow = r, scale = 'free')
-    p <- pltobj + ggh4x::facet_grid2(rows = vars(.data[[target]]), 
-                                     scales = "free_y", 
-                                     independent = "y")
+    # use the original values
+    pd <- dobj$dboth
+    # plot with facet
+    p <- ggplot(pd, aes(x = datetime, 
+                        y = value,
+                        colour = data_source))
     
+    subtitle_text <- 'Adjusted (original unit, not using 2015 basis)'
+    
+  }else{
+    # require some processing
+    # use 2015 as basis: need first 12 points
+    # d$dnew$datetime[1:12]
+    new <- dobj$dnew
+    basis_2015_new <- mean(new$value[1:12])
+    new$value_2015b <- new$value/basis_2015_new * 100
+    
+    # old
+    old <- dobj$dold
+    basis_2015_old <- mean(old$value[1:12])
+    old$value_2015b <- old$value/basis_2015_old * 100
+    
+    # put together
+    pd <- rbind(new, old)
+    
+    # plot with facet
+    p <- ggplot(pd, aes(x = datetime, 
+                        y = value_2015b,  # use 2015b
+                        colour = data_source))
+    
+    subtitle_text <- 'Using 2015 average as basis'
   }
-  p <- p + labs(subtitle = 'Adjusted units')
+  
+  p <- p + geom_line(linewidth =1)
+  # add facet 
+  # p <- p + facet_grid(rows = vars(data_source))
+  p <- p + ggh4x::facet_grid2(rows = vars(data_source), 
+                              scales = "free_y", 
+                              independent = "y")
+  
+  # add 'today'
+  p <- p + geom_vline(xintercept = Sys.Date(), 
+                      col = 'blue', 
+                      linetype = 'dashed', 
+                      linewidth = 0.6)
+  p <- p + labs(
+    x = 'Datetime', 
+    y = 'Price', 
+    title = dobj$label_display,
+    subtitle = subtitle_text
+  )
+  
+  # make white background
+  p <- p + theme_bw() 
+  # change text size
+  p <- p + theme(
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 10), 
+    plot.title = element_text(size = 12), 
+    plot.subtitle = element_text(size = 10),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5),
+    legend.position = 'none' # drop legend
+  )
+  # adjust plotting of time
+  p <- p + scale_x_date(date_breaks = "3 year", date_labels = "%Y")
+  # change color
+  p <- p + scale_color_brewer(palette = 'Set1')
+  
   return(p)
 }
+
+
+
 
 plot_index_comparison <- function(data, tag, title){
   # tag <- 'all'
@@ -536,7 +626,64 @@ make_commodity_infocard <- function(info_target){
 
 
 
+# NOT USED ----
 
+plot_comparison <- function(dobj){
+  
+  pd <- dobj$dboth
+  p <- ggplot(pd, aes(x = datetime, 
+                      y = value, 
+                      colour = data_source))
+  p <- p + geom_line(linewidth =1)
+  # add 'today'
+  p <- p + geom_vline(xintercept = Sys.Date(), 
+                      col = 'blue', 
+                      linetype = 'dashed', 
+                      linewidth = 0.6)
+  p <- p + labs(
+    x = 'Datetime', 
+    y = 'Price', 
+    title = dobj$label_display,
+    subtitle = paste0('Original scale')
+  )
+  # make white background
+  p <- p + theme_bw() 
+  # change text size
+  p <- p + theme(
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 10), 
+    plot.title = element_text(size = 12), 
+    plot.subtitle = element_text(size = 10),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5),
+    legend.position = 'none' # drop legend
+  )
+  # adjust plotting of time
+  p <- p + scale_x_date(date_breaks = "3 year", date_labels = "%Y")
+  # change color
+  p <- p + scale_color_brewer(palette = 'Set1')
+  # p <- p + facet_wrap(~data_source, nrow = 3)
+  return(p)
+  
+}
+
+
+plot_facet <- function(pltobj, target, free_scale = F){
+  
+  # use .data[[colname]] to pass on customized names
+  # p <- pltobj + facet_wrap( ~ .data[[target]])
+  p <- pltobj + facet_grid(rows = vars(.data[[target]]))
+  if(free_scale == T){
+    # p <- pltobj + facet_wrap( ~ .data[[target]], nrow = r, scale = 'free')
+    p <- pltobj + ggh4x::facet_grid2(rows = vars(.data[[target]]), 
+                                     scales = "free_y", 
+                                     independent = "y")
+    
+  }
+  p <- p + labs(subtitle = 'Adjusted units')
+  return(p)
+}
 
 
 

@@ -9,7 +9,7 @@ dir_metadata <- 'metadata/'
 dir_datasource_2024 <- 'datasource_2024/'
 dir_datasource_2025 <- 'datasource_2025/'
 
-write_path <- '~/Documents/GitHub/un-commodity-prices/results/'
+result_path <- '~/Documents/GitHub/un-commodity-prices/results/'
 
 
 # combine old source data into one
@@ -91,7 +91,7 @@ dcompare <- dcompare[-which(is.na(dcompare$CommodityProduct))]
 
 # write.xlsx(dcompare, file = paste0(write_path, 'prices_2024_compare.xlsx'))
 # write.csv(dcompare, file = paste0(write_path, 'prices_2024_compare.csv'))
-saveRDS(dcompare, file = paste0(write_path, 'prices_2024_compare.rds'))
+saveRDS(dcompare, file = paste0(result_path, 'prices_2024_compare.rds'))
 
 
 
