@@ -1,73 +1,108 @@
-# harvester for new, automated sources
-# validation data is in another script
+# COMPUTE AND VALIDATE THE COMMODITY PRICE INDEX
 
-# library(data.table)
+# (please use the document outline functionality in Rstudio to navigate the sections)
+# this R script contains the following sections:
+
+# 1. load raw data and process
+# 2. missing data handling
+# 3. compute index from merged dataset from the new source
+# 4. validation and plots
+
+
+
+
+# load necessary packages
+
 library(openxlsx)
 library(readxl)
 library(jsonlite)
 library(httr)
-library(zoo)
 library(dplyr)
 library(naniar) # missing data vis
+library(zoo) # datetime management
+
+
+# set paths ----
+# please set the correct directory for your machine
+
+
+project_path <- '~/Documents/GitHub/un-commodity-prices/deliverables/'
 
 # source the functions needed
-source('~/Documents/GitHub/un-commodity-prices/dev_prices/util.R')
+source(paste0(project_path, 'rscripts/util.R'))
 
 # set data paths
-read_path <- '~/Documents/GitHub/un-commodity-prices/data-raw/'
+read_path <- paste0(project_path, 'data/')
 dir_metadata <- 'metadata/'
 dir_datasource_2024 <- 'datasource_2024/'
-dir_datasource_2025 <- 'datasource_2025/'
+dir_val <- 'validation/'
 
-result_path <- '~/Documents/GitHub/un-commodity-prices/results/'
+
+
+
+
+
+
+
+
+
+# ____________ ----
+# section 1: load and process raw data
+# three data sources are used here: world bank, imf and fao
+# in addition, metadata need to be loaded so that the column selection is simplified
 
 
 
 # metadata ----
+# metadata contains important information
+
 
 metadata <- read.xlsx(paste0(read_path, dir_metadata, 'commodity_metadata.xlsx'), sheet = 'commodity')
-source <- read.xlsx(paste0(read_path, dir_metadata, 'commodity_metadata.xlsx'), sheet = 'source')
+# source <- read.xlsx(paste0(read_path, dir_metadata, 'commodity_metadata.xlsx'), sheet = 'source')
+
 
 # View(metadata)
 head(metadata)
-
+head(source)
 
 
 # 5110 World bank ----
-# also do necessary processing, such as datetime
-# this needs to be replaced with URL
 
-wb_link <- 'https://thedocs.worldbank.org/en/doc/18675f1d1639c7a34d463f59263ba0a2-0050012025/related/CMO-Historical-Data-Monthly.xlsx'
 
+# if you have the dataset downloaded to your machine, can load it directly
 # wb_raw <- read.xlsx(paste0(read_path, 
 #                            dir_datasource_2025, 
 #                            "CMO-Historical-Data-Monthly.xlsx"), 
 #                           sheet = "Monthly Prices", startRow = 5)
 
+# read directly from online url
+wb_link <- 'https://thedocs.worldbank.org/en/doc/18675f1d1639c7a34d463f59263ba0a2-0050012025/related/CMO-Historical-Data-Monthly.xlsx'
 wb_raw <- read.xlsx(wb_link, 
                     sheet = "Monthly Prices", startRow = 5)
 
 
-# print the column names and location
+# print the column names
 wb_var <- get_info_wb(wb_raw)
 # View(wb_var)
 
 
 
-# process
+# process the raw data
 # make the values numeric
 wb <- process_data_wb(data = wb_raw)
 
 
 
-# select relevant series, based on metadata
+# select relevant series
+# based on metadata
 
 # this also has to be within the wb scope
 
-# View(meta)
-# View(wb_info)
 wb_info <- filter(metadata, data_source_2025_code == 5110 & !is.na(label_source_2025))
+wb_info
 # double check if this is what we need
+
+
 
 # process the labels to remove the special characters
 wb_labels <- wb_info$label_source_2025
@@ -76,12 +111,16 @@ wb_labels <- gsub('\\*', '.', wb_labels) # substitute the star (careful since it
 wb_labels <- gsub('%', '.', wb_labels) # substitute the commas
 wb_labels
 
-# select based on names
+
+
+# select based on the labels along with datetime 
 wb_narrow <- select(wb, year, period, time, datetime, all_of(wb_labels))
 head(wb_narrow)
 
-# reset the colnames
-colnames(wb_narrow)[5:ncol(wb_narrow)]
+
+# reset the colnames to short descriptions
+# original names have special characters
+colnames(wb_narrow)[5:ncol(wb_narrow)] # original name
 colnames(wb_narrow)[5:ncol(wb_narrow)] <- wb_info$description_short
 
 
@@ -89,39 +128,52 @@ colnames(wb_narrow)[5:ncol(wb_narrow)] <- wb_info$description_short
 
 # 2311 IMF ----
 
+# imf data api has been recently updated
+# the link below is working as of 2025.4
+
+# to import the data, we can not directly read the excel like we did for worldbank above
+# can not directly import the excel sheet since it's ashx format
+
+# the data has to be downloaded first, either to a known destination or tempfile()
+# to read xls requires readxl::read_excel
+
 imf_link <- 'https://www.imf.org/-/media/Files/Research/CommodityPrices/Monthly/external-data.ashx'
 
-# to use the link, need to first download the data
-# can not direclty import the excel sheet since it's ashx format
+# imf_raw <- read_excel(paste0('YOUR_PATH', "imf.xls"))
+
 imf_loc <- tempfile()
 download.file(imf_link, imf_loc)
-
-# to read xls requires readxl::read_excel
-# imf_raw <- read_excel(paste0(read_path, dir_datasource_2025, "imf.xls"))
-
+# read from temporary path
 imf_raw <- read_excel(path = imf_loc)
 
 
 # check variables
+# note that the last variables are not available
+# however users can still distinguish what it is from the description
+
 imf_var <- get_info_imf(imf_raw)
 # View(imf_var)
+
+
 
 # process data
 imf <- process_data_imf(imf_raw)
 
-# need to fill in Manganese
+# need to fill in Manganese, as we know it is in the 92th place
 imf <- fill_imf_name(data = imf, 
                      keyword = 'Mang', 
                      col_to_fill = '...92', 
                      fill_name = 'PMANG')
 
-# select 
+
+# select column based on metadata
 
 imf_info <- filter(metadata, data_source_2025_code == 2311 & 
                      !is.na(label_source_2025) & keep == 'yes')
 imf_info
-imf_narrow <- select(imf, year, datetime, all_of(imf_info$label_source_2025))
 
+# select datetime along with variables
+imf_narrow <- select(imf, year, datetime, all_of(imf_info$label_source_2025))
 imf_narrow
 
 # reset name 
@@ -131,6 +183,9 @@ colnames(imf_narrow)[3:ncol(imf_narrow)] <- imf_info$description_short
 
 
 # 1603 FAO FPMA ----
+# this data source is only used for jute
+# it is not complete, so we might have to drop it entirely
+
 
 # first get metadata
 fpma_api <- GET("https://fpma.fao.org/giews/v4/price_module/api/v1/FpmaSerieInternational/")
@@ -160,17 +215,32 @@ jute$datetime <- as.Date(jute$datetime)
 
 
 
+
+
+
+
 # merge -----
+# this step merges three data sources
+
 # join wb, imf, jute
 dcommodity <- left_join(wb_narrow, imf_narrow) |> 
   left_join(jute)
 
 
 colnames(dcommodity)
+# View(dcommodity)
+
+
+# if you want, save it somewhere
+saveRDS(dcommodity, paste0(read_path, dir_val, 'dcommodity.rds'))
 
 
 
-# basic info ----
+# ____________ ----
+
+# section 2: handle missing data
+
+# check missing----
 # two aspects: last updated time + missing
 # if missing a lot, also backfill with historical data
 
@@ -193,19 +263,86 @@ check_missing_period(data = dcommodity, tag = 'jute')
 
 
 
-# these require backfill
-dcompare <- readRDS(paste0(result_path, 'prices_2024_compare.rds'))
-head(dcompare)
 
-# find a way to match the products then fill in the missing data
-d <- merge_price_new_old(data_new = dcommodity, 
-                         data_old = dcompare, 
-                         info_target = checklist[1,])
+# backfill -----
+# 6801 manganese, use existing data
+# load comparison data
+# dcompare <- readRDS(paste0(result_path, 'prices_2024_compare.rds'))
+# head(dcompare)
+# 
+# filter(dcompare, CommodityProduct == '260200.01')
+# filter(dcompare, CommodityProduct == '260200.02')
+
+# manganese, use the one for 260200.02
 
 
-checklist <- openxlsx::read.xlsx(paste0(result_path, 'checklist.xlsx'))
-# backfill_missing <- function(data_old)
-# consideration: unit difference have to be dealt with 
+# discontinued impute -----
+
+# shrimp
+# imf has shrimp, but price values are different
+# imf 58
+
+dcommodity |> head()
+shrimp <- dcommodity$shrimps_mex
+plot(shrimp, type = 'l', main = 'wb shrimp')
+
+
+imf_var
+imf_raw[, 59]
+# PSHRI
+
+shrimp_imf <- imf_raw[40:nrow(imf_raw), 59]
+lines(shrimp_imf, col = 'red')
+par(mfrow = c(1,1))
+plot(shrimp_imf, type = 'l', main = 'imf shirmp')
+
+
+
+
+
+# jute
+# jute is missing all times
+jute <- dcommodity$jute
+plot(jute)
+
+
+
+# historical missing ----
+
+# sunflower oil (imf 65)
+
+
+sunflower <- dcommodity$sunflower_oil
+plot(sunflower, type = 'l', main = 'wb sunflower')
+
+imf_raw[, 65]
+imf_raw[40,1] # this is where 1995 starts
+
+sunflower_imf <- imf_raw[40:nrow(imf_raw), 65]
+plot(sunflower_imf, type = 'l', main = 'imf sunflower')
+
+# can overlay
+lines(sunflower, type = 'l')
+plot(sunflower_imf, type = 'l', col = 'red')
+
+
+
+
+
+# palmkernel
+palmk <- dcommodity$palmkernel_oil
+plot(palmk, type = 'l', main = 'wb palm kernel')
+
+# overlay with palm oil
+lines(dcommodity$palm_oil, col = 'red')
+
+# try imf source
+View(imf_var)
+palm_imf <- imf_raw$PPOIL[40:nrow(imf_raw)]
+plot(palm_imf, type = 'l', main = 'imf palm')
+lines(dcommodity$palm_oil, col = 'red')
+# imf closer to the wb palm oil
+
 
 
 
@@ -232,20 +369,20 @@ checklist <- openxlsx::read.xlsx(paste0(result_path, 'checklist.xlsx'))
 
 
 
-# _________ -----
-# compute index -----
+# ____________ ----
+
+# section 3: compute index
+# this section contains code for computing indices in different subgroups
 
 
-# rebase the prices, 2015 as 100
-# use the average of 2015 price 
-# View(metadata)
-head(metadata)
+
+# process metadata, weights -----
+
 
 # weights 
 weights <- read.xlsx(paste0(read_path, dir_metadata, 'weights.xlsx'),
                      sheet = 'weight_reference')
-head(weights)
-tail(weights)
+weights
 
 # shares sum up to 1
 weights$s |> sum()
@@ -253,10 +390,12 @@ weights$s |> round(4)
 
 
 
+# take necessary columns and rows 
 
-# take necessary columns and rows
-# join the metadata and weights together
 colnames(metadata)
+
+# from metadata:
+
 m <- filter(metadata, keep == 'yes') |> 
   select(index_sort, 
          series_id, 
@@ -267,6 +406,8 @@ m <- filter(metadata, keep == 'yes') |>
 m |> head()
 
 
+# from weights:
+
 ws <- filter(weights, available == 'yes') |> 
   select(index_sort, 
          group, 
@@ -274,19 +415,30 @@ ws <- filter(weights, available == 'yes') |>
          index_description,
          s)
 
-nrow(m) # 46
-nrow(ws) # 44
+nrow(m)
+nrow(ws) 
 
 # View(m)
 # only 1101 (coffee), 4201 (crude oil) have more frequency
+# this is ok
 table(m$index_sort) |> sort()
 
 
+
+# join the metadata and weights together
 M <- full_join(m, ws, by = 'index_sort')
 # View(M)
 
-# standardize based on 2015 as 100
-# compute the within group 
+
+
+
+
+# rebase prices 2015 ----
+# rebase the prices, 2015 as 100
+# use the average of 2015 price 
+
+
+# compute 2015 average for each commodity
 
 basis_2015 <- filter(dcommodity, year == 2015) |> 
   select(-c(year, period, time, datetime)) |> 
@@ -294,36 +446,25 @@ basis_2015 <- filter(dcommodity, year == 2015) |>
 
 basis_2015 <- data.frame(basis_2015)
 basis_2015$description_short <- rownames(basis_2015)
+basis_2015
 
 # merge it to M
 M2 <- left_join(M, basis_2015, by = 'description_short')
 
 
 
-# original price matrix -----
 
-dcommodity |> head()
-
-# percentage missing 
-apply(dcommodity, 2, function(x){sum(is.na(x))})
-
-
-# select only relevant columns from commodity
-dcwide <- select(dcommodity, -c(year, period, time, datetime))
-# still want to keep track of the time information
-
-rownames(dcwide) <- dcommodity$datetime
-head(dcwide)
 
 
 
 # grouping ----
 # grouping information
-# process grouping 
+
 # level 0: all
 # level 1: group
 # level 2: subgroup and combinations
 
+# grouping information is in the validation_unctad tab
 
 grouping <- read.xlsx(paste0(read_path, dir_metadata, 'weights.xlsx'), 
                                sheet = 'validation_unctad')
@@ -334,21 +475,41 @@ grouping
 # select one combination
 # from 1 to 14
 cg <- query_commodity_group(target_group_info = grouping[14,])
+cg
 
+
+
+# original price matrix
+# select only relevant columns from dcommodity
+dcwide <- select(dcommodity, -c(year, period, time, datetime))
+
+# keep track of the time information, but put it as rowname rather than a column
+rownames(dcwide) <- dcommodity$datetime
+head(dcwide)
+
+
+
+# compute index ----
+# this step requires 3 pieces of information:
+# price series (original scale)
+# weights
+# grouping information
 
 index_onegroup <- compile_index(d_price = dcwide,
-                      d_weight_unscaled = M2,
-                      commodity_group = cg)
+                                d_weight_unscaled = M2,
+                                commodity_group = cg)
+
+head(index_onegroup)
 
 
 # do a forloop for all 14 groups
-
 indices <- list()
 
 for(i in 1:nrow(grouping)){
   # select group info
   cg <- query_commodity_group(target_group_info = grouping[i,])
   # compute index
+  # cg is changing while dcwide, M2 are the same
   index <- compile_index(d_price = dcwide,
                          d_weight_unscaled = M2,
                          commodity_group = cg)
@@ -361,19 +522,26 @@ names(indices) <- grouping$group_name
 # indices$all_excl_precious_metal_fuels
 # collect together 
 index_matrix <- do.call(cbind, indices)
-View(index_matrix)
+head(index_matrix)
+
+# each column is one group
 
 
 
+# ____________ ----
+
+# section 4: validation
+# this section contains code for validating the compiled indices against published data
 
 
-# __________ ----
-# validate -----
+# process published data -----
 
-price_public <- read.csv("~/Documents/GitHub/un-commodity-prices/data-raw/datasource_2025/US.CommodityPriceIndices_M_20250317_100020.csv")
-View(price_public)
+# download the unctad published dataset
+# then load it 
 
+price_public <- read.csv(paste0(read_path, dir_val, "US.CommodityPriceIndices_M_20250317_100020.csv"))
 head(price_public)
+
 # check names
 colnames(price_public)
 
@@ -381,16 +549,16 @@ colnames(price_public)
 datetime_public <- process_historic_time(time_vec = price_public$Period_Label)
 
 
+# use the grouping from previous section
 grouping
 
 # process the unctad published data for consistent names
-
 indices_val <- list()
 
 for(i in 1:nrow(grouping)){
   ind <- extract_historic_single(data = price_public, 
-                          public_name = grouping[i,]$unctad_name,
-                          new_name = grouping[i,]$group_name)
+                                 public_name = grouping[i,]$unctad_name,
+                                 new_name = grouping[i,]$group_name)
   indices_val[[i]] <- ind
 }
 
@@ -407,8 +575,9 @@ head(indices_validate)
 
 
 
-# make long formatted for both public and ours
-# ours
+# make long formatted for both published and our compiled indices (auto)
+# our compiled
+
 index_matrix <- data.frame(index_matrix)
 index_matrix$datetime <- rownames(index_matrix)
 index_long <- tidyr::pivot_longer(index_matrix, -datetime)
@@ -428,7 +597,7 @@ indices_both <- rbind(index_long, indices_validate_long)
 indices_both$datetime <- as.Date.character(indices_both$datetime)
 
 
-saveRDS(indices_both, file = paste0(result_path, 'indices_both.rds'))
+# saveRDS(indices_both, file = paste0(result_path, 'indices_both.rds'))
 
 
 # plot ----
@@ -444,8 +613,8 @@ p <- p + geom_line()
 p
 
 
-# put into function
-grouping
+# put into function, and make it nicer looking
+
 plot_index_comparison(data = indices_both, 
                       tag = 'all', 
                       title = 'All commodities')
@@ -490,7 +659,6 @@ plot_index_comparison(data = indices_both,
                       tag = 'fuels', 
                       title = 'Fuels')
 
-
 plot_index_comparison(data = indices_both, 
                       tag = 'all_excl_fuels', 
                       title = 'All (excluding fuels)')
@@ -502,12 +670,6 @@ plot_index_comparison(data = indices_both,
 plot_index_comparison(data = indices_both, 
                       tag = 'all_excl_precious_metal_fuels', 
                       title = 'All (excluding precious metal, fuels)')
-
-
-
-
-
-
 
 
 

@@ -17,16 +17,6 @@ format:
 ---
 
 
-::: {.callout-note}
-## TO DO
-
-* Missing handling: take into account the unit difference. Given that most series are in the past, is it still necessary to impute?
-
-:::
-
-
-
-
 # Overview
 
 In the table below we list a summary of commodity products whose data sources are changed. The majority of the products can use the new sources without issues. Some have inconsistent values and/or time period availability: 

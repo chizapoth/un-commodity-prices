@@ -1,12 +1,12 @@
 ---
-title: "Documentation for the price index computation"
+title: "Technical notes: commodity price index computation"
 format: 
   html:
    toc: true
    toc-depth: 3
    code-fold: false
    code-tools: false
-   highlight-style: gruvbox
+   highlight-style: github
 #format:
 #  docx:
 #    toc: true
@@ -17,6 +17,7 @@ format:
 ---
 
 
+This document 
 
 ```{r}
 #| echo: true
@@ -176,7 +177,7 @@ colnames(imf_narrow)[3:ncol(imf_narrow)] <- imf_info$description_short
 ```
 
 
-## FAO
+### FAO
 
 The mechanism is slightly different for FAO. First grab the name (`Jute`), then query it based on `uuid`.
 
