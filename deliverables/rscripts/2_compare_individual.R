@@ -48,7 +48,7 @@ dir_val <- 'validation/'
 metadata <- read.xlsx(paste0(read_path, dir_metadata, 'commodity_metadata.xlsx'), 
                       sheet = 'commodity')
 
-View(metadata)
+# View(metadata)
 
 # select the ones we need: only compare two sources
 set_newsource <- filter(metadata, check_two_sources == 'yes')

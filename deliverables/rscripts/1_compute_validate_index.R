@@ -57,13 +57,11 @@ dir_val <- 'validation/'
 # metadata contains important information
 
 
-metadata <- read.xlsx(paste0(read_path, dir_metadata, 'commodity_metadata.xlsx'), sheet = 'commodity')
-# source <- read.xlsx(paste0(read_path, dir_metadata, 'commodity_metadata.xlsx'), sheet = 'source')
-
+metadata <- read.xlsx(paste0(read_path, dir_metadata, 'commodity_metadata.xlsx'), 
+                      sheet = 'commodity')
 
 # View(metadata)
 head(metadata)
-head(source)
 
 
 # 5110 World bank ----
@@ -98,7 +96,7 @@ wb <- process_data_wb(data = wb_raw)
 
 # this also has to be within the wb scope
 
-wb_info <- filter(metadata, data_source_2025_code == 5110 & !is.na(label_source_2025))
+wb_info <- filter(metadata, data_source_2025_code == 5110 & !is.na(label_source_2025) & keep == 'yes')
 wb_info
 # double check if this is what we need
 
@@ -240,6 +238,7 @@ saveRDS(dcommodity, paste0(read_path, dir_val, 'dcommodity.rds'))
 
 # section 2: handle missing data
 
+
 # check missing----
 # two aspects: last updated time + missing
 # if missing a lot, also backfill with historical data
@@ -254,116 +253,142 @@ vis_miss(commodity_only)
 
 
 # more details for the missing series
-check_missing_period(data = dcommodity, tag = 'shrimps_mex')
+# check_missing_period(data = dcommodity, tag = 'shrimps_mex')
 check_missing_period(data = dcommodity, tag = 'sunflower_oil')
 check_missing_period(data = dcommodity, tag = 'palmkernel_oil')
-check_missing_period(data = dcommodity, tag = 'rubber_tsr20')
+# check_missing_period(data = dcommodity, tag = 'rubber_tsr20')
 check_missing_period(data = dcommodity, tag = 'manganese_99')
 check_missing_period(data = dcommodity, tag = 'jute')
 
 
 
 
+# handle missing
+# create a replacement dataset
+# operate on this
+
+dcommodity_filled <- dcommodity
+
+
+
 # backfill -----
 # 6801 manganese, use existing data
+
 # load comparison data
-# dcompare <- readRDS(paste0(result_path, 'prices_2024_compare.rds'))
+dcompare <- readRDS(paste0(read_path, dir_val, 'prices_2024_compare.rds'))
+
 # head(dcompare)
-# 
-# filter(dcompare, CommodityProduct == '260200.01')
-# filter(dcompare, CommodityProduct == '260200.02')
-
 # manganese, use the one for 260200.02
+manga_compare <- filter(
+  dcompare, CommodityProduct == '260200.02' & dtime %in% manga_missing_period
+)|> select(manganese_99 = Value, 
+           datetime = dtime)
 
 
-# discontinued impute -----
+# missing period in the wb data
+manga_mp <- check_missing_period(data = dcommodity, tag = 'manganese_99')
+manga_missing_period <- manga_mp$missing_datetime
+
+# select the price in the original data
+manga_dcommodity <- select(dcommodity_filled, 
+                   manganese_99, datetime)
+
+manga_dcommodity
+plot(manga_dcommodity$manganese_99)
+plot(manga_compare$manganese_99)
+
+# patch the same period in the comparison data
+
+manga_filled <- rows_patch(manga_dcommodity, manga_compare, by = 'datetime')
+plot(manga_filled$manganese_99)
+
+
+# replace the filled series in dcommodity
+dcommodity_filled$manganese_99 <- manga_filled$manganese_99
+
+
+
+
+
+# discontinued impute ----- # 
 
 # shrimp
 # imf has shrimp, but price values are different
 # imf 58
 
-dcommodity |> head()
-shrimp <- dcommodity$shrimps_mex
-plot(shrimp, type = 'l', main = 'wb shrimp')
+# dcommodity |> head()
+# shrimp <- dcommodity$shrimps_mex
+# plot(shrimp, type = 'l', main = 'wb shrimp')
+# 
+# 
+# imf_var
+# imf_raw[, 59]
+# # PSHRI
+# 
+# shrimp_imf <- imf_raw[40:nrow(imf_raw), 59]
+# lines(shrimp_imf, col = 'red')
+# par(mfrow = c(1,1))
+# plot(shrimp_imf, type = 'l', main = 'imf shrimp')
 
 
-imf_var
-imf_raw[, 59]
-# PSHRI
-
-shrimp_imf <- imf_raw[40:nrow(imf_raw), 59]
-lines(shrimp_imf, col = 'red')
-par(mfrow = c(1,1))
-plot(shrimp_imf, type = 'l', main = 'imf shirmp')
-
-
-
-
-
-# jute
-# jute is missing all times
-jute <- dcommodity$jute
-plot(jute)
-
-
-
-# historical missing ----
 
 # sunflower oil (imf 65)
 
+plot(dcommodity$sunflower_oil, type = 'l', main = 'wb sunflower')
 
-sunflower <- dcommodity$sunflower_oil
-plot(sunflower, type = 'l', main = 'wb sunflower')
+sunflower_dcommodity <- select(dcommodity_filled, 
+                               sunflower_oil, datetime)
 
-imf_raw[, 65]
-imf_raw[40,1] # this is where 1995 starts
+sunflower_mp <- check_missing_period(data = dcommodity, tag = 'sunflower_oil')
+sunflower_missing_period <- sunflower_mp$missing_datetime
 
-sunflower_imf <- imf_raw[40:nrow(imf_raw), 65]
-plot(sunflower_imf, type = 'l', main = 'imf sunflower')
+# select sunflower oil in the imf data
+sunflower_imf <- select(imf, sunflower_oil = PSUNO, datetime) |> 
+  filter(datetime %in% sunflower_missing_period)
 
-# can overlay
-lines(sunflower, type = 'l')
-plot(sunflower_imf, type = 'l', col = 'red')
 
+# patch the same period in the comparison data
+
+sunflower_filled <- rows_patch(sunflower_dcommodity, sunflower_imf, by = 'datetime')
+plot(sunflower_filled$sunflower_oil)
+# replace the filled series in dcommodity
+dcommodity_filled$sunflower_oil <- sunflower_filled$sunflower_oil
 
 
 
 
 # palmkernel
-palmk <- dcommodity$palmkernel_oil
-plot(palmk, type = 'l', main = 'wb palm kernel')
-
-# overlay with palm oil
-lines(dcommodity$palm_oil, col = 'red')
-
-# try imf source
-View(imf_var)
-palm_imf <- imf_raw$PPOIL[40:nrow(imf_raw)]
-plot(palm_imf, type = 'l', main = 'imf palm')
-lines(dcommodity$palm_oil, col = 'red')
-# imf closer to the wb palm oil
+plot(dcommodity$palmkernel_oil, type = 'l', main = 'wb palm kernel')
 
 
+palmkernel_dcommodity <- select(dcommodity_filled, 
+                                palmkernel_oil, datetime)
+
+palmkernel_mp <- check_missing_period(data = dcommodity, tag = 'palmkernel_oil')
+palmkernel_missing_period <- palmkernel_mp$missing_datetime
+
+
+# select palm oil in the imf data
+palm_imf <- select(imf, palmkernel_oil = PPOIL, datetime) |> 
+  filter(datetime %in% palmkernel_missing_period)
+
+
+# patch the same period in the comparison data
+
+palmkernel_filled <- rows_patch(palmkernel_dcommodity, palm_imf, by = 'datetime')
+plot(palmkernel_filled$palmkernel_oil)
+# replace the filled series in dcommodity
+dcommodity_filled$palmkernel_oil <- palmkernel_filled$palmkernel_oil
 
 
 
 
 
+# double check filled data
+vis_miss(dcommodity_filled)
 
-# trouble shooting
-# something wrong happened when merging 
-
-# d1 <- wb_narrow[, 1:5]
-# d2 <- imf_narrow[, 1:5]
-# head(d1)
-# head(d2)
-# test <- left_join(d1, d2)
-# head(test)
-
-# save for future use
-# write.xlsx(dcommodity, file = paste0(result_path, 'prices_2025_precheck.xlsx'))
-# write.csv(dcommodity, file = paste0(write_path, 'prices_2025_precheck.csv'))
-
+# if wanted, save for future use
+saveRDS(dcommodity_filled, paste0(read_path, dir_val, 'dcommodity_filled.rds'))
 
 
 
@@ -374,6 +399,10 @@ lines(dcommodity$palm_oil, col = 'red')
 # section 3: compute index
 # this section contains code for computing indices in different subgroups
 
+# call it a name that will distinguish itself
+# depending whether you want to use the filled data or not, 
+# select either dcommodity or dcommodity_filled
+dprices <- dcommodity_filled
 
 
 # process metadata, weights -----
@@ -440,7 +469,7 @@ M <- full_join(m, ws, by = 'index_sort')
 
 # compute 2015 average for each commodity
 
-basis_2015 <- filter(dcommodity, year == 2015) |> 
+basis_2015 <- filter(dprices, year == 2015) |> 
   select(-c(year, period, time, datetime)) |> 
   apply(MARGIN = 2, mean) 
 
@@ -480,11 +509,11 @@ cg
 
 
 # original price matrix
-# select only relevant columns from dcommodity
-dcwide <- select(dcommodity, -c(year, period, time, datetime))
+# select only relevant columns from dprices
+dcwide <- select(dprices, -c(year, period, time, datetime))
 
 # keep track of the time information, but put it as rowname rather than a column
-rownames(dcwide) <- dcommodity$datetime
+rownames(dcwide) <- dprices$datetime
 head(dcwide)
 
 
@@ -597,7 +626,7 @@ indices_both <- rbind(index_long, indices_validate_long)
 indices_both$datetime <- as.Date.character(indices_both$datetime)
 
 
-# saveRDS(indices_both, file = paste0(result_path, 'indices_both.rds'))
+# saveRDS(indices_both, file = paste0(read_path, dir_val, 'indices_both.rds'))
 
 
 # plot ----
