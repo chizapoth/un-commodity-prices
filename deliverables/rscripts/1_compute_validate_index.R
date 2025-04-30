@@ -243,7 +243,7 @@ saveRDS(dcommodity, paste0(read_path, dir_val, 'dcommodity.rds'))
 # two aspects: last updated time + missing
 # if missing a lot, also backfill with historical data
 
-
+# dcommodity <- readRDS(paste0(read_path, dir_val, 'dcommodity.rds'))
 head(dcommodity)
 
 
@@ -279,15 +279,16 @@ dcompare <- readRDS(paste0(read_path, dir_val, 'prices_2024_compare.rds'))
 
 # head(dcompare)
 # manganese, use the one for 260200.02
+# missing period in the wb data
+manga_mp <- check_missing_period(data = dcommodity, tag = 'manganese_99')
+manga_missing_period <- manga_mp$missing_datetime
+
 manga_compare <- filter(
   dcompare, CommodityProduct == '260200.02' & dtime %in% manga_missing_period
 )|> select(manganese_99 = Value, 
            datetime = dtime)
 
 
-# missing period in the wb data
-manga_mp <- check_missing_period(data = dcommodity, tag = 'manganese_99')
-manga_missing_period <- manga_mp$missing_datetime
 
 # select the price in the original data
 manga_dcommodity <- select(dcommodity_filled, 
@@ -402,6 +403,8 @@ saveRDS(dcommodity_filled, paste0(read_path, dir_val, 'dcommodity_filled.rds'))
 # call it a name that will distinguish itself
 # depending whether you want to use the filled data or not, 
 # select either dcommodity or dcommodity_filled
+
+dcommodity_filled <- readRDS(paste0(read_path, dir_val, 'dcommodity_filled.rds'))
 dprices <- dcommodity_filled
 
 
@@ -528,7 +531,11 @@ index_onegroup <- compile_index(d_price = dcwide,
                                 d_weight_unscaled = M2,
                                 commodity_group = cg)
 
+
 head(index_onegroup)
+index_onegroup
+
+
 
 
 # do a forloop for all 14 groups

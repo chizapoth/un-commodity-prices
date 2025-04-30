@@ -1,23 +1,34 @@
 ---
 title: "Technical notes: commodity price index computation"
-format: 
-  html:
-   toc: true
-   toc-depth: 3
-   code-fold: false
-   code-tools: false
-   highlight-style: github
-#format:
-#  docx:
-#    toc: true
-#    toc-depth: 2
-    # reference-doc: template.docx
-#    number-sections: true
-#    highlight-style: github
+#format: 
+#  html:
+#   toc: true
+#   toc-depth: 3
+#   code-fold: false
+#   code-tools: false
+#   highlight-style: github
+format:
+  docx:
+    toc: true
+    toc-depth: 2
+    reference-doc: template.docx
+    number-sections: true
+    highlight-style: gruvbox
 ---
 
 
-This document 
+This document contains the technical notes for the commodity price index computation. The R code in this document are consistent with `1_compute_validate_index.R`.
+
+The index computation requires the following steps, which are explained in details in the next sections. 
+
+1. load raw data and process
+2. missing data handling
+3. compute index from merged dataset from the new source
+
+The validation and plots are recorded in graphics in the other reproducible document. 
+
+
+First you need to load necessary R packages and set the project directory. The directories are recommended to distinguish source code, metadata and data for validation.
 
 ```{r}
 #| echo: true
@@ -31,17 +42,18 @@ library(httr)
 library(readxl)
 library(zoo)
 library(dplyr)
+library(naniar)
 
-# source the utility functions
-source('~/Documents/GitHub/un-commodity-prices/dev_prices/util.R')
+project_path <- '~/Documents/GitHub/un-commodity-prices/deliverables/'
 
-# set data paths
-read_path <- '~/Documents/GitHub/un-commodity-prices/data-raw/'
+# source the functions needed
+source(paste0(project_path, 'rscripts/util.R'))
+
+# set paths
+read_path <- paste0(project_path, 'data/')
 dir_metadata <- 'metadata/'
 dir_datasource_2024 <- 'datasource_2024/'
-dir_datasource_2025 <- 'datasource_2025/'
-
-# write_path <- '~/Documents/GitHub/unctad-int/dev_prices/results/'
+dir_val <- 'validation/'
 ```
 
 
@@ -55,21 +67,21 @@ The content of metadata:
 * `index_sort`: 4-digits ID used to compute price index
 * `series_id`: 8 digits ID for specific commodity
 * `description_long`: detailed description of commodity for 2024 sources
-* `unit_2024`: unit used as in the description (2024 sources). This might not be the same as in the 2025 sources. <span style = 'color:red'>add a footnote</span>
+* `unit_2024`: unit used as in the description (2024 sources). This might not be the same as in the 2025 sources. 
 * `data_source_2024_code`, `data_source_2024`: code and description for data sources used in 2024 version. For example, 5110 is World Bank Commodity markets.
 * `data_source_2025_code`, `data_source_2025`: code and description for data sources used in 2025 version.
 * `label_display`: commodity name, used for graphics
-* `label_source_2025`: commodity name as in their 2025 data sources. It is important to match the correct names to the latest data. <span style = 'color:red'>this step needs to be emphasized</span>
+* `label_source_2025`: commodity name as in their 2025 data sources. It is important to match the correct names to the latest data. 
 * `check_two_sources`: indicator of whether the sources are switched from 2024 to 2025. If yes, then quality check graphics will be produced.
 * `keep`: indicator of whether we keep the series in the price index computation.
-* `within_product_weight`: weight for products that share the same `index_sort`. For now only applies to coffee and oil. <span style = 'color:red'>more info see index computation</span>
+* `within_product_weight`: weight for products that share the same `index_sort`. For now only applies to coffee and oil. 
+* `share_scale`: used only for computing products in the subgroups.
 
 ```{r}
-metadata <- read.xlsx(paste0(read_path, 
-                             dir_metadata, 
-                             'commodity_metadata.xlsx'), 
+metadata <- read.xlsx(paste0(read_path, dir_metadata, 'commodity_metadata.xlsx'), 
                       sheet = 'commodity')
-head(metadata, 3)
+
+head(metadata, 1)
 ```
 
 
@@ -85,33 +97,38 @@ In this step we gather the data from their original sources, then carry out some
 
 ### World Bank
 
-<span style = 'color:red'>Note: data file needs to be replaced by API link!</span>
+We load the World Bank data from an URL (functional as of 2025.4.29)
 
-We load the data first, then do some processing: convert the prices into numeric values.
+Do some processing: convert the prices into numeric values.
 
 ```{r}
 #| warning: false
-# load the raw data (to be replaced by API)
-wb_raw <- read.xlsx(paste0(read_path, 
-                           dir_datasource_2025, 
-                           "CMO-Historical-Data-Monthly.xlsx"), 
-                          sheet = "Monthly Prices", startRow = 5)
 
-# print the column names and location
+wb_link <- 'https://thedocs.worldbank.org/en/doc/18675f1d1639c7a34d463f59263ba0a2-0050012025/related/CMO-Historical-Data-Monthly.xlsx'
+wb_raw <- read.xlsx(wb_link, 
+                    sheet = "Monthly Prices", startRow = 5)
+
+# print the column names
 wb_var <- get_info_wb(wb_raw)
 
+# process the raw data
 # make the values numeric
 wb <- process_data_wb(data = wb_raw)
 ```
 
 
-Now select the relevant commodities, as defined by **metadata**. We choose the ones where `data_source_2025_code == 5110` (world bank).
+Now select the relevant commodities, as defined by **metadata**. We choose the ones where `data_source_2025_code == 5110` (world bank), no missing (`!is.na(label_source_2025)` and `keep == 'yes'` to indicate whether it's needed.
+
+Please double check whether the variables are what we need!
 
 Some of the labels might have special characters, hence we replace them.
 
 ```{r}
-wb_info <- filter(metadata, data_source_2025_code == 5110 & !is.na(label_source_2025))
-# double check if this is what we need
+# select relevant series
+# based on metadata
+# this also has to be within the wb scope
+
+wb_info <- filter(metadata, data_source_2025_code == 5110 & !is.na(label_source_2025) & keep == 'yes')
 
 # process the labels to remove the special characters
 wb_labels <- wb_info$label_source_2025
@@ -120,27 +137,38 @@ wb_labels <- gsub('\\*', '.', wb_labels) # substitute the star (careful since it
 wb_labels <- gsub('%', '.', wb_labels) # substitute the commas
 wb_labels
 ```
+
 Above are the variable names that correspond to the world bank data file. Now we carry out the selection: keep `year`, `period`, `time`, `datetime` and the commodity labels.
 
-Since some labels are long, we set new names.
+Since some labels are long and have special characters, we set new names that are easier for coding.
+
 
 ```{r}
 # select based on names
 wb_narrow <- select(wb, year, period, time, datetime, all_of(wb_labels))
 
 # reset the colnames
-colnames(wb_narrow)[5:ncol(wb_narrow)]
+# colnames(wb_narrow)[5:ncol(wb_narrow)]
 colnames(wb_narrow)[5:ncol(wb_narrow)] <- wb_info$description_short
+colnames(wb_narrow)[5:ncol(wb_narrow)]
 ```
 
 ### IMF
 
 Carry out similar tasks for the IMF data. 
 
+One thing to note is that IMF data API is subject to change in the near future. Please double check if the link is still functional.
+
 ```{r}
-imf_raw <- read_excel(paste0(read_path, 
-                             dir_datasource_2025, 
-                             "imf.xls"))
+imf_link <- 'https://www.imf.org/-/media/Files/Research/CommodityPrices/Monthly/external-data.ashx'
+
+# imf_raw <- read_excel(paste0('YOUR_PATH', "imf.xls"))
+
+imf_loc <- tempfile()
+download.file(imf_link, imf_loc)
+# read from temporary path
+imf_raw <- read_excel(path = imf_loc)
+
 # check variables
 imf_var <- get_info_imf(imf_raw)
 # View(imf_var)
@@ -166,7 +194,6 @@ Select the variables defined in **metadata**: where `data_source_2025_code == 23
 imf_info <- filter(metadata, data_source_2025_code == 2311 & 
                      !is.na(label_source_2025) & keep == 'yes')
 imf_info
-
 
 # select relevant columns
 imf_narrow <- select(imf, year, datetime, all_of(imf_info$label_source_2025))
@@ -201,8 +228,8 @@ jute_raw <- GET(paste0("https://fpma.fao.org/giews/v4/price_module/api/v1/FpmaSe
 jute <- fromJSON(rawToChar(jute_raw$content))
 
 # only from 2004.1 to 2024.1
-head(jute$datapoints)
-tail(jute$datapoints)
+head(jute$datapoints, 3)
+tail(jute$datapoints, 3)
 ```
 
 Convert to proper format to prepare for merging.
@@ -213,6 +240,7 @@ colnames(jute)[1] <- 'datetime'
 colnames(jute)[2] <- 'jute'
 jute$datetime <- as.Date(jute$datetime)
 ```
+
 
 ## Merge 
 
@@ -229,17 +257,119 @@ colnames(dcommodity)
 
 # Quality checks
 
-<span style = 'color:red'>TO DO: </span>
+It can be very convenient to visualize the data missingness. 
 
-* summary for the price series, including dates
-* <span style = 'color:red'>need to backfill some data for those unavailable</span>
+```{r}
+# visualise which series are missing
+commodity_only <- select(dcommodity, -c(year, period, time, datetime))
+vis_miss(commodity_only) 
+```
+We can see that `sunflower_oil`, `palmkernel_oil`, `manganese_99` and `jute` have quite some missing values. We should be careful about what to do for each case.
+
+* historical missing can be handled by using already existing data from other sources. If multiple data sources have similar values for most of the time periods, they can be used directly (sunflower oil, palm kernel oil, manganese).
+* discontinued data: depending on the importance of the product in the index computation, it can be completely dropped (jute).
+
+The missingness of prices should be monitored constantly as data sources might change.
+
+
+## Fill missing period
+
+We create a copy of the data for backfilling, in this way we keep track of the original data for comparison.
+
+```{r}
+dcommodity_filled <- dcommodity
+```
+
+### Manganese
+
+For manganese, we use the historical data from **Metal Bulletin** (6801). This is already processed and saved in `prices_2024_compare.rds`, so we load the data and retrieve the proper column.
+
+When it comes to backfilling, we use the function `rows_patch` from `dplyr`. This function conveniently matches the common column (date time) and fills the missing.
+
+We save it in the `dcommodity_filled` dataframe.
+
+```{r}
+# missing period in the wb data
+manga_mp <- check_missing_period(data = dcommodity, tag = 'manganese_99')
+manga_missing_period <- manga_mp$missing_datetime
+
+# load comparison data
+dcompare <- readRDS(paste0(read_path, dir_val, 'prices_2024_compare.rds'))
+
+# manganese, use the one for 260200.02
+manga_compare <- filter(
+  dcompare, CommodityProduct == '260200.02' & dtime %in% manga_missing_period
+)|> select(manganese_99 = Value, 
+           datetime = dtime)
+
+
+# select the price in the original data
+manga_dcommodity <- select(dcommodity_filled, 
+                   manganese_99, datetime)
+
+# patch the same period in the comparison data
+manga_filled <- rows_patch(manga_dcommodity, manga_compare, by = 'datetime')
+# plot(manga_filled$manganese_99)
+# replace the filled series in dcommodity
+dcommodity_filled$manganese_99 <- manga_filled$manganese_99
+```
+
+### Sunflower oil
+
+For sunflower oil, we use a comparable historical data from IMF. 
+
+```{r}
+sunflower_dcommodity <- select(dcommodity_filled, 
+                               sunflower_oil, datetime)
+
+sunflower_mp <- check_missing_period(data = dcommodity, tag = 'sunflower_oil')
+sunflower_missing_period <- sunflower_mp$missing_datetime
+
+# select sunflower oil in the imf data
+sunflower_imf <- select(imf, sunflower_oil = PSUNO, datetime) |> 
+  filter(datetime %in% sunflower_missing_period)
+
+# patch the same period in the comparison data
+
+sunflower_filled <- rows_patch(sunflower_dcommodity, sunflower_imf, by = 'datetime')
+# plot(sunflower_filled$sunflower_oil)
+# replace the filled series in dcommodity
+dcommodity_filled$sunflower_oil <- sunflower_filled$sunflower_oil
+```
+
+### Palm kernel oil
+
+For this product, we do not have any product that is directly replaceable. We can use palm oil from IMF, which is close enough.
+
+```{r}
+palmkernel_dcommodity <- select(dcommodity_filled, 
+                                palmkernel_oil, datetime)
+
+palmkernel_mp <- check_missing_period(data = dcommodity, tag = 'palmkernel_oil')
+palmkernel_missing_period <- palmkernel_mp$missing_datetime
+
+
+# select palm oil in the imf data
+palm_imf <- select(imf, palmkernel_oil = PPOIL, datetime) |> 
+  filter(datetime %in% palmkernel_missing_period)
+
+# patch the same period in the comparison data
+palmkernel_filled <- rows_patch(palmkernel_dcommodity, palm_imf, by = 'datetime')
+# replace the filled series in dcommodity
+dcommodity_filled$palmkernel_oil <- palmkernel_filled$palmkernel_oil
+```
+
+
+
 
 
 # Price index computation 
 
-This is the step for computing the prices using the weights. One important thing to note is that the **weight matrix does not have the 8 digits code** for individual series, so we need to have one additional step of linking these two tables.
+This is the step for computing the prices using the weights. One important thing to note is that the **weight matrix does not have the 8 digits code** for individual series, so we need to have one additional step of linking these two tables: **metadata** and **weights**.
 
-## Weights
+## Prepare weights
+
+### Weights
 
 ```{r}
 weights <- read.xlsx(paste0(read_path, dir_metadata, 'weights.xlsx'))
@@ -261,7 +391,7 @@ The content of weight data:
 weights$s |> sum()
 ```
 
-## Combine weight with metadata
+### Combine weight with metadata
 
 This step produces a table that provides information that links price series to their weights. 
 
@@ -270,7 +400,8 @@ m <- dplyr::filter(metadata, keep == 'yes') |>
   select(index_sort, 
          series_id, 
          description_short, 
-         within_product_weight)
+         within_product_weight,
+         share_scale)
 
 m |> head()
 ```
@@ -286,9 +417,9 @@ ws <- dplyr::filter(weights, available == 'yes') |>
 ws |> head()
 ```
 
-## Within product weights
+### Within product weights
 
-Double check how many rows there are. They might be different. 
+Double check how many rows there are. They might be different, but it is not a big problem: we have a mechanism to cope with products that share the same **index sort code**, as explained below.
 
 ```{r}
 c(nrow(m), nrow(ws))
@@ -302,23 +433,28 @@ The within-product weight is defined in the **metadata**. For most products this
 
 Special case:
 
-* index sort code 2010: **Rubber** RSS3 (400100.02) and TSR20 (400100.01). We use RSS3 as it is complete, while TSR20 is only available from 1999 in World Bank Data. The within-product weight becomes 1 and 0 respectively.
+* index sort code 2010: **Rubber** RSS3 (400100.02) and TSR20 (400100.01). We use RSS3 as it is complete, while TSR20 is only available from 1999 in World Bank Data. 
+
+Now join the selected columns of weight and metadata together by `index_sort`.
 
 ```{r}
-# only 1101 (coffee), 2010 (rubber) 4201 (crude oil) have more frequency
+# only 1101 (coffee), 4201 (crude oil) have more frequency
 table(m$index_sort) |> sort()
 
 M <- full_join(m, ws, by = 'index_sort')
-head(M)
+head(M,3)
 ```
 
 
 ## Compute index
 
-Now we compute the index. First need to base the prices at 2015 as 100: compute the average price for each product for 2015, and merge it back to **M** matrix. These 2015 basis values are used as the denominator when we compute the index.
+Now we compute the index. First we need to base the prices at 2015 as 100: compute the average price for each product for 2015, and merge it back to **M** matrix. These 2015 basis values are used as the denominator when we compute the index.
 
 ```{r}
-basis_2015 <- filter(dcommodity, year == 2015) |> 
+# call it a different name
+dprices <- dcommodity_filled
+
+basis_2015 <- filter(dprices, year == 2015) |> 
   select(-c(year, period, time, datetime)) |> 
   apply(MARGIN = 2, mean) 
 basis_2015 <- data.frame(basis_2015)
@@ -329,81 +465,65 @@ head(basis_2015)
 M2 <- left_join(M, basis_2015, by = 'description_short')
 ```
 
-Now we select the relevant columns (by dropping `year, period, time, datetime`). 
+
+Select the relevant columns from the prices (by dropping `year, period, time, datetime`). 
 
 ```{r}
 # select only relevant columns
-dcwide <- select(dcommodity, -c(year, period, time, datetime))
+dcwide <- select(dprices, -c(year, period, time, datetime))
 
 # still want to keep track of the time information
-rownames(dcwide) <- dcommodity$datetime
+rownames(dcwide) <- dprices$datetime
 ```
 
 Divide the original values by the 2015 basis, then multiply by their weights. For the special cases (coffee, crude oil), the *within_product_weight* is used to combine the weighted sum of the two sub-products.
 
-### Test out for one series
+### Index for one product group
 
-Let us use beef as an example.
+UNCTAD has many distinct subgroups for products, hence we need to match the variables for each group. 
 
 ```{r}
-#| eval: false
-products <- M2$description_short
-products[1]
+# grouping information is in the validation_unctad tab
+
+grouping <- read.xlsx(paste0(read_path, dir_metadata, 'weights.xlsx'), 
+                               sheet = 'validation_unctad')
+
+
+grouping
 ```
 
+Let us test it for the first combination: **all products**. 
+
 ```{r}
-#| eval: false
-beef <- compute_weighted_price(d_price = dcwide,
-                               d_weight = M2,
-                               product = products[1])
-str(beef)
+# select one combination
+# from 1 to 14
+cg <- query_commodity_group(target_group_info = grouping[1,])
+cg
 ```
 
-The result lists are as follow:
+The function `compile_index` takes in three arguments:
 
-* `info`: basic information for this commodity
-* `d_rebase`: price after dividing by its 2015 average then multiplied by 100
-* `d_weighted`: price index after multiplying the re-based values with the share and weight that contribute to the final index.
-
-
-
-### Repeat for all commodities
+* `d_price`: the prices for individual products
+* `d_weight_unscaled`: the weight matrix (after combining metadata)
+* `commodity_group`: group information used to select and rescale the index
 
 ```{r}
-#| eval: false
-# do it for all 47 series
-products <- M2$description_short
-reslist <- list()
+#| echo: true
+#| eval: true
+index_onegroup <- compile_index(d_price = dcwide,
+                                d_weight_unscaled = M2,
+                                commodity_group = cg)
 
-for(i in 1:length(products)){
-  reslist[[i]] <- compute_weighted_price(
-    d_price = dcwide,
-    d_weight = M2,
-    product = products[i]
-  )
-  # cat('processing product ', i, '\n')
-}
-
-names(reslist) <- products
-```
-
-Now put everything together. We extract the weighted series from all commodities, and put them in one matrix.
-
-```{r}
-#| eval: false
-# put together
-list_weighted <- purrr::map(reslist, function(x){x$d_weighted})
-mat_weighted <- do.call(cbind, list_weighted)
+head(index_onegroup$index)
 ```
 
 
-The final index is the row-sum of all series. Note that for now we have removed all the missing values, but they can also be imputed with historical data.
+### Index for other groups
 
-```{r}
-#| eval: false
-index <- apply(mat_weighted, 1, function(x)(sum(x, na.rm = T)))
-plot(index, type = 'l')
-```
+Please read through the R code in `1_compute_valdiate_index.R` section 4.
+
+
+
 
 
 

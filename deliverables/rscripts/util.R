@@ -208,7 +208,7 @@ compile_index <- function(d_price, d_weight_unscaled, commodity_group){
   
   # rescale the m weights
   # m$s_rescale <- m$s / sum(m$s)
-  ms <- compute_scaled_weight(m)
+  ms <- compute_scaled_weight(d_weight_unscaled = m)
   
   products <- ms$description_short
   reslist <- list()

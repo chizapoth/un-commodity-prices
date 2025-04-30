@@ -1,0 +1,692 @@
+---
+title: "Quality Assurance: Commodity Prices"
+#format: 
+#  html:
+#   toc: true
+#   toc-depth: 3
+#   code-fold: false
+#   code-tools: false
+#   highlight-style: gruvbox
+format:
+  docx:
+   toc: true
+   toc-depth: 3
+   reference-doc: template.docx
+   number-sections: true
+   highlight-style: github
+---
+
+This document contains information on the quality assurance for the commodity price index computation. To be more specific, two aspects are discussed:
+
+* quality of compiled indices (for different groups as UNCTAD publishes) after changing the data source
+* documentation of individual price series that have changed data sources.
+
+In general, the indices computed from old and new data sources are fairly consistent, suggesting that the source change is feasible. Some discrepancies are recorded for the reader's information. 
+
+
+### Summary
+
+In the table below we list a summary of commodity products whose data sources are changed. The majority of the products can use the new sources without issues. Some have inconsistent values and/or time period availability: 
+
+* Values match, while some time periods are missing: **iron ore, manganese, rubber, wool (fine)**. In the computation of index, we either use omit the missing period in the new source, or impute with historical data from another source.
+* Time periods are all available, while values differ. This can be due to different units, exchange rates or unknown reasons. After adjustment, the difference do not affect the index computation much.
+* Historical comparison data from old sources are unavailable.
+
+Please go to the details for each product for more information. The data source corresponding to the 4-digit code can be found in Appendix 1. 
+
+
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+library(ggplot2)
+library(dplyr)
+library(data.table)
+library(openxlsx)
+library(gt)
+
+project_path <- '~/Documents/GitHub/un-commodity-prices/deliverables/'
+
+# source the functions needed
+source(paste0(project_path, 'rscripts/util.R'))
+
+# set data paths
+read_path <- paste0(project_path, 'data/')
+dir_metadata <- 'metadata/'
+dir_datasource_2024 <- 'datasource_2024/'
+dir_val <- 'validation/'
+```
+
+
+
+```{r}
+#| echo: false
+#| eval: true
+
+checklist <- openxlsx::read.xlsx(paste0(read_path, dir_val, 'checklist.xlsx'))
+cl <- openxlsx::read.xlsx(paste0(read_path, dir_val, 'checklist_report.xlsx'))
+
+tb2 <- gt(cl)
+
+tb2 <- cols_label(tb2, 
+                  description_short = 'Product', 
+                  series_id = 'Product ID', 
+                  data_source_2024_code = 'Data Source (2024)',
+                  data_source_2025_code = 'Data Source (2025)',
+                  value_match = 'Values matched?',
+                  availability_match = 'Availability matched?')
+tb2
+```
+
+
+# Compiled indices 
+
+In the table below we list the published UNCTAD commodity data names, and the the short names for coding.
+
+```{r}
+#| eval: true
+#| echo: false
+# load data
+indices_both <- readRDS(paste0(read_path, dir_val, 'indices_both.rds'))
+# head(indices_both)
+grouping <- openxlsx::read.xlsx(paste0(read_path, dir_metadata, 'weights.xlsx'), 
+                               sheet = 'validation_unctad')
+
+
+gt(grouping[, c(1,2)])
+```
+
+
+In the following section, computed indices with the automatic sources are visualized together. The ordering are based on the groups:
+
+* overall
+* food and agricultural
+* metal
+* fuel
+* other combinations
+
+Please refer to the metadata to find out what is included in each group.
+
+In general, the quality of using automatic commodity sources are quite good. For more details please check the graphics below.
+
+
+## Overall group
+
+```{r}
+#| eval: true
+#| echo: false
+
+plot_index_comparison(data = indices_both, 
+                      tag = 'all', 
+                      title = 'All commodities')
+```
+
+## Subgroups: food and agricultural
+
+```{r}
+#| eval: true
+#| echo: false
+
+plot_index_comparison(data = indices_both, 
+                      tag = 'all_food', 
+                      title = 'All food')
+
+plot_index_comparison(data = indices_both, 
+                      tag = 'food', 
+                      title = 'Food')
+
+plot_index_comparison(data = indices_both, 
+                      tag = 'tropical_beverages', 
+                      title = 'Tropical beverages')
+
+plot_index_comparison(data = indices_both, 
+                      tag = 'tropical_beverages_food', 
+                      title = 'Tropical beverages, food')
+
+plot_index_comparison(data = indices_both, 
+                      tag = 'vegetable_oilseeds_oil', 
+                      title = 'Vegetable, oilseeds, oil')
+
+plot_index_comparison(data = indices_both, 
+                      tag = 'agricultural_raw_material', 
+                      title = 'Agricultural raw material')
+```
+
+
+
+## Subgroups: metal
+
+
+```{r}
+#| eval: true
+#| echo: false
+
+plot_index_comparison(data = indices_both, 
+                      tag = 'minerals_ore_metal', 
+                      title = 'Minerals ore metal')
+
+plot_index_comparison(data = indices_both, 
+                      tag = 'minerals_ore_metal_non_precious_metal', 
+                      title = 'Minerals ore metal (non precious metal)')
+
+plot_index_comparison(data = indices_both, 
+                      tag = 'precious_metal', 
+                      title = 'Precious metal')
+```
+
+
+
+## Subgroups: fuels
+
+
+```{r}
+#| eval: true
+#| echo: false
+
+
+plot_index_comparison(data = indices_both, 
+                      tag = 'fuels', 
+                      title = 'Fuels')
+```
+
+
+## Subgroups: combinations
+
+```{r}
+#| eval: true
+#| echo: false
+plot_index_comparison(data = indices_both, 
+                      tag = 'all_excl_fuels', 
+                      title = 'All (excluding fuels)')
+
+plot_index_comparison(data = indices_both, 
+                      tag = 'all_excl_precious_metal', 
+                      title = 'All (excluding precious metal)')
+
+plot_index_comparison(data = indices_both, 
+                      tag = 'all_excl_precious_metal_fuels', 
+                      title = 'All (excluding precious metal, fuels)')
+
+```
+
+
+
+# Individual commodity products
+
+In this section we provide the details on each commodity. They are ordered based on the 8-digit product ID, as shown in the table above. 
+
+
+```{r}
+#| eval: true
+#| echo: false
+# load data
+dcommodity <- readRDS(paste0(read_path, dir_val, 'dcommodity.rds'))
+# datetime check and convert
+# dcommodity$datetime <- check_date_convert(dcommodity$datetime)
+# comparison data
+dcompare <- readRDS(paste0(read_path, dir_val, 'prices_2024_compare.rds'))
+```
+
+
+
+## Fish (Salmon)
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: salmon
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[1,])
+make_commodity_infocard(checklist[1,])
+plot_comparison_price(dobj = d)
+```
+
+## Banana
+
+In the metadata, there are three codes for banana
+
+* if we use `080300.01`, the old source is also WB. Can use directly
+* in the old way to compile the price index, code `080300.03` is used, which comes from TR. This series is quite different from WB data.
+* another series `080300.02` also exists in WB
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'banana'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[2,])
+make_commodity_infocard(checklist[2,])
+plot_comparison_price(dobj = d)
+```
+
+
+## Coffee
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'coffee-arabica'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[3,])
+make_commodity_infocard(checklist[3,])
+
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
+```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'coffee-robusta'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[4,])
+make_commodity_infocard(checklist[4,])
+
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
+```
+
+## Wheat
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'wheat'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[5,])
+make_commodity_infocard(checklist[5,])
+
+plot_comparison_price(dobj = d)
+```
+
+### Maize
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'maize'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[6,])
+make_commodity_infocard(checklist[6,])
+
+plot_comparison(dobj = d)
+```
+
+## Sugar
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'sugar'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[7,])
+make_commodity_infocard(checklist[7,])
+
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
+```
+
+## Cocoa
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'cocoa'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[8,])
+make_commodity_infocard(checklist[8,])
+
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
+```
+
+## Tobacco
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'tobacco'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[9,])
+make_commodity_infocard(checklist[9,])
+
+plot_comparison(dobj = d)
+```
+
+
+## Iron ore
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'ironore'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[10,])
+make_commodity_infocard(checklist[10,])
+
+plot_comparison_price(dobj = d)
+# plot_comparison_price_facet(dobj = d)
+plot_comparison_price_facet(dobj = d, free_scale = T)
+```
+
+## Manganese
+
+Historical data is from Metal Bulletin.
+
+New source: IMF, available from 2012.6.1. In the computation of price indices, historical data may be used to impute the missing values.
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'manga99'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[11,])
+make_commodity_infocard(checklist[11,])
+
+plot_comparison_price(dobj = d)
+# plot_comparison_price_facet(dobj = d)
+plot_comparison_price_facet(dobj = d, free_scale = T)
+```
+
+## Copper
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'copper'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[12,])
+make_commodity_infocard(checklist[12,])
+
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
+```
+
+## Nickel
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'nickel'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[13,])
+make_commodity_infocard(checklist[13,])
+
+plot_comparison(dobj = d)
+```
+
+## Aluminum
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'aluminum'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[14,])
+make_commodity_infocard(checklist[14,])
+
+plot_comparison(dobj = d)
+```
+
+## Lead
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'lead'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[15,])
+make_commodity_infocard(checklist[15,])
+
+plot_comparison(dobj = d)
+```
+
+## Zinc
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'zinc'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[16,])
+make_commodity_infocard(checklist[16,])
+
+plot_comparison(dobj = d)
+```
+
+## Tin
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'tin'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[17,])
+make_commodity_infocard(checklist[17,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+## Silver
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'silver'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[18,])
+make_commodity_infocard(checklist[18,])
+
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
+```
+
+## Coal
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'coal'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[19,])
+make_commodity_infocard(checklist[19,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+## Rubber
+
+
+Rubber has two codes in WB, RSS3 and TR
+
+* RSS3 is available for all times
+* TSR20 is available from 1999.1.1. The old source is using TSR20 in the price index computation
+* We can either impute the historical TSR20, or use RSS3 instead, should not create big difference. In practice, we are using only **RSS3**.
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'rubber'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[20,])
+make_commodity_infocard(checklist[20,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+## Hides
+
+No comparison data, only IMF.
+
+Available for all times.
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'hides'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[21,])
+make_commodity_infocard(checklist[21,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+
+
+## Wool
+
+Historical data: `510100.02`, `510100.03` available from AWI
+
+* `510100.03` only from 2013. Fine wool
+* `510100.02` only available for very short period, can drop it
+
+New source: IMF has PWOOLF (fine) and PWOOLC (coarse) for all times. For the comparison, `510100.03` is compared with `PWOOLF`. For the period where they both exist, seem to overlap quite well. 
+
+For the purpose of computing the index, use `PWOOLF`.
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'wool'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[22,])
+make_commodity_infocard(checklist[22,])
+
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
+```
+
+## Jute
+
+Jute only has one data source, which is FAO. No other historical data exists. Just use this for the computation.
+
+Only available from 2004. In the price compilation, it may be dropped completely.
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'jute'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[23,])
+make_commodity_infocard(checklist[23,])
+
+p <- plot_comparison(dobj = d)
+p
+```
+
+## Gold
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'gold'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[24,])
+make_commodity_infocard(checklist[24,])
+
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
+```
+
+## Platinum
+
+```{r}
+#| echo: false
+#| warning: false
+#| eval: true
+#| label: 'platinum'
+d <- merge_price_new_old(data_new = dcommodity, 
+                          data_old = dcompare, 
+                          info_target = checklist[25,])
+make_commodity_infocard(checklist[25,])
+
+plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
+```
+
+# Appendix 1
+
+```{r}
+#| eval: true
+#| echo: false
+
+dir_metadata <- '~/Documents/GitHub/un-commodity-prices/data-raw/metadata/'
+
+source <- openxlsx::read.xlsx(paste0(dir_metadata, 'commodity_metadata.xlsx'), sheet = 'source')
+tb <- gt(source)
+# tab_header(tb, title = 'stuff')
+tb <- cols_label(tb, 
+           code = 'Code', 
+           label = 'Label', 
+           label_short = 'Label (short)')
+tb
+```
+
+
+
+
+
