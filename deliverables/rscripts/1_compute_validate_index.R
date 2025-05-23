@@ -234,6 +234,62 @@ saveRDS(dcommodity, paste0(read_path, dir_val, 'dcommodity.rds'))
 
 
 
+
+
+
+# ____________ ----
+
+# check 1 ----
+
+# flag for notable jumps: +- 30% for latest vs previous month (apr 2025 vs mar) 
+# final check for indices
+
+# drop jute
+# View(dcommodity)
+dcommodity <- select(dcommodity, -c(jute))
+
+# select commodity only
+commodity_only <- select(dcommodity, -c(year, period, time, datetime))
+
+n <- nrow(commodity_only)
+last_two <- commodity_only[c(n-1, n),]
+
+# compute the percentage change
+perc_change <- apply(last_two, 2, function(x){round((x[2] - x[1])/x[1],2)})
+
+# put into a dataframe
+perc_change <- data.frame(variable = names(perc_change), 
+                          value = 100* perc_change)
+
+p <- ggplot(perc_change, aes(x = variable, y = value)) 
+p <- p + geom_bar(stat = 'identity') + ylim(c(31, -31))
+p <- p + geom_hline(yintercept = c(30, -30), col = 'red')
+p <- p + labs(
+  x = 'Product names', 
+  y = 'Change', 
+  title = 'Relative percent change compared to previous month',
+  subtitle = 'Threshold set to +- 30%. Investigate if exceeding the threshold'
+)
+p <- p + coord_flip()
+
+p
+
+
+
+# check 2 ----
+
+# flag for revision: +- 30% for latest vs 1m ago for all individual series  (do the ratio of 
+# two published series)
+
+
+
+
+
+
+
+
+
+
 # ____________ ----
 
 # section 2: handle missing data
@@ -256,6 +312,7 @@ vis_miss(commodity_only)
 # check_missing_period(data = dcommodity, tag = 'shrimps_mex')
 check_missing_period(data = dcommodity, tag = 'sunflower_oil')
 check_missing_period(data = dcommodity, tag = 'palmkernel_oil')
+check_missing_period(data = dcommodity, tag = 'phosphate_rock')
 # check_missing_period(data = dcommodity, tag = 'rubber_tsr20')
 check_missing_period(data = dcommodity, tag = 'manganese_99')
 check_missing_period(data = dcommodity, tag = 'jute')
@@ -333,7 +390,7 @@ dcommodity_filled$manganese_99 <- manga_filled$manganese_99
 
 
 
-# sunflower oil (imf 65)
+# sunflower oil (imf 65) ----
 
 plot(dcommodity$sunflower_oil, type = 'l', main = 'wb sunflower')
 
@@ -358,7 +415,7 @@ dcommodity_filled$sunflower_oil <- sunflower_filled$sunflower_oil
 
 
 
-# palmkernel
+# palmkernel ----
 plot(dcommodity$palmkernel_oil, type = 'l', main = 'wb palm kernel')
 
 
@@ -380,6 +437,24 @@ palmkernel_filled <- rows_patch(palmkernel_dcommodity, palm_imf, by = 'datetime'
 plot(palmkernel_filled$palmkernel_oil)
 # replace the filled series in dcommodity
 dcommodity_filled$palmkernel_oil <- palmkernel_filled$palmkernel_oil
+
+
+
+
+
+# phosphate_rock ----
+
+# only 1 missing point
+# to use the function, need to manually specify the variable name
+# use only after visual inspection
+
+phosphate_rock_filled <- impute_with_mean(data = dcommodity_filled,
+                                          varname = 'phosphate_rock')
+phosphate_rock_filled$d_tofill
+phosphate_rock_filled$d_filled
+dcommodity_filled$phosphate_rock <- phosphate_rock_filled
+
+
 
 
 

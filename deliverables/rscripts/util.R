@@ -131,6 +131,24 @@ check_missing_period <- function(data, tag){
 
 
 
+impute_with_mean <- function(data, varname){
+  
+  # data <- dcommodity_filled
+  # varname <- 'phosphate_rock'
+  mean_val <- mean(data[[varname]], na.rm = T)
+  n_impute <- sum(is.na(data[[varname]]))
+  
+  d_tofill <- data[[varname]]
+  d_filled <- d_tofill
+  d_filled[is.na(d_filled)] <- mean_val
+  
+  return(list(d_tofill = d_tofill,
+              d_filled = d_filled,
+              n_impute = n_impute, 
+              mean_val = mean_val))
+}
+
+
 # compute index ----
 
 
@@ -438,7 +456,7 @@ plot_comparison_price <- function(dobj){
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
     axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5),
-    legend.position = 'none' # drop legend
+    legend.position = 'bottom' # if drop legend, use 'none'
   )
   # adjust plotting of time
   p <- p + scale_x_date(date_breaks = "3 year", date_labels = "%Y")

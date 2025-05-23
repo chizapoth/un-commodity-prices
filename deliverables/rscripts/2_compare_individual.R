@@ -74,6 +74,9 @@ igc <- read_excel(paste0(read_path, dir_datasource_2024, "6901_IGC.xls"), sheet 
 irsg <- read_excel(paste0(read_path, dir_datasource_2024, "8301_IRSG.xlsx"), sheet = "ready for SAM")
 cocoa_icco <- read_excel(paste0(read_path, dir_datasource_2024, "1801_ICCO.xlsx"))
 awi <- read_excel(paste0(read_path, dir_datasource_2024, "8001_AWI.xlsx"), sheet = "ready for SAM")
+tobacco <- read.csv(paste0(read_path, dir_datasource_2024, "4901_USDA.csv"), dec = ",")
+
+
 # codes needs to be modified slightly
 # fish
 ssb <- read.csv(paste0(read_path, dir_datasource_2024, "7801_StatNorway_from_API.csv"))
@@ -94,6 +97,8 @@ colnames(coffee_ico)
 colnames(cocoa_icco)
 colnames(awi)
 colnames(ssb)
+colnames(tobacco)
+
 
 # only keep consistent names
 keep_var <- c('CommodityProduct', 
@@ -114,7 +119,7 @@ coffee_narrow <- select(coffee_ico, all_of(keep_var))
 cocoa_narrow <- select(cocoa_icco, all_of(keep_var))
 awi_narrow <- select(awi, all_of(keep_var))
 ssb_narrow <- select(ssb, all_of(keep_var))
-
+tobacco_narrow <- select(tobacco, all_of(keep_var))
 
 # coffee_narrow$CommodityProduct |> table()
 
@@ -127,7 +132,8 @@ dcompare <- rbind(mb_narrow,
                   coffee_narrow, 
                   cocoa_narrow, 
                   awi_narrow, 
-                  ssb_narrow)
+                  ssb_narrow, 
+                  tobacco_narrow)
 
 head(dcompare)
 # dcompare$CommodityProduct |> table()
@@ -267,8 +273,8 @@ checklist <- select(set_newsource,
                     data_source_2025,
                     label_source_2025,
                     label_display)
-
-# write.xlsx(checklist, file = paste0(result_path, 'checklist.xlsx'))
+# View(checklist)
+# write.xlsx(checklist, file = paste0(project_path, 'data/', dir_val, 'checklist.xlsx'))
 
 
 
@@ -295,6 +301,7 @@ good_match <- c('fish_salmon',
 
 unit_difference <- c('coffee_arabica',
                      'coffee_robusta',
+                     #'banana_us',
                      'sugar',
                      'cocoa',
                      'copper',
@@ -302,12 +309,14 @@ unit_difference <- c('coffee_arabica',
                      'wool_fine',
                      'rubber_rss3')
 
+value_difference <- c('banana_us')
+
 period_difference <- c('manganese_99',
                        'iron_ore',
                        'wool_fine',
                        'rubber_rss3')
 
-no_comparison <- c('banana',
+no_comparison <- c(# 'banana',
                    'tobaco',
                    'hides',
                    'jute')
@@ -318,15 +327,16 @@ checklist_narrow$availability_match <- 'Good'
 
 # replace a few values based on the condition
 cl <- mutate(checklist_narrow, value_match = replace(value_match, description_short %in% no_comparison, 'No comparison'))
-cl < mutate(cl, value_match = replace(value_match, description_short %in% unit_difference, 'Unit difference'))
-
+cl <- mutate(cl, value_match = replace(value_match, description_short %in% unit_difference, 'Unit difference'))
+cl <- mutate(cl, value_match = replace(value_match, description_short %in% value_difference, 'Value difference'))
 cl <- mutate(cl, availability_match = replace(availability_match, description_short %in% no_comparison, 'No comparison'))
 cl <- mutate(cl, availability_match = replace(availability_match, description_short %in% period_difference, 'Period difference'))
 
 
-cl
 
-# write.xlsx(cl, file = paste0(result_path, 'checklist_report.xlsx'))
+cl
+View(cl)
+# write.xlsx(cl, file = paste0(project_path, 'data/', dir_val, 'checklist_report.xlsx'))
 
 
 # put into table
@@ -405,4 +415,50 @@ hides <- merge_commodity_data(data_new = dcommodity,
 # filter(dcompare, CommodityProduct == '410100.02')
 
 plot_comparison(dobj = hides)
+
+
+
+
+# banana ----
+
+# actually banana is only in 7901, not 1603 (only jute and sisal)
+# 7901: thomson reuters
+
+# tr_narrow <- select(tr, all_of(keep_var))
+
+
+banana_tr <- filter(tr_narrow, CommodityProduct == '080300.03')
+
+
+info_target <- filter(set_newsource, description_short == 'banana_us')
+
+# bn <- merge_commodity_data(data_new = dcommodity, 
+#                               data_old = dcompare,
+#                               info_target = info_target)
+
+
+dcommodity$banana_us |> plot()
+lines(banana_tr$Value)
+banana_tr
+# wb 
+# banana europe only available from 1996
+# banana us is complete
+
+
+
+# only after 1995
+banana_eu <- wb$Banana..Europe
+banana_us <- wb$Banana..US
+banana_tr <- banana_tr$Value
+
+
+
+# should be just us
+par(mfrow = c(3, 1))
+plot(banana_tr, type = 'l', main = 'thompson reuters (old data source)')
+plot(banana_eu, type = 'l', main = 'wb - eu')
+plot(banana_us, type = 'l', main = 'wb - us')
+
+
+
 

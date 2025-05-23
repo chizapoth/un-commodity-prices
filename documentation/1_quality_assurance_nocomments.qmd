@@ -1,5 +1,6 @@
 ---
 title: "Quality Assurance: Commodity Prices"
+subtitle: 'Graphs and tables only'
 #format: 
 #  html:
 #   toc: true
@@ -16,23 +17,6 @@ format:
    highlight-style: github
 ---
 
-This document contains information on the quality assurance for the commodity price index computation. To be more specific, two aspects are discussed:
-
-* quality of compiled indices (for different groups as UNCTAD publishes) after changing the data source
-* documentation of individual price series that have changed data sources.
-
-In general, the indices computed from old and new data sources are fairly consistent, suggesting that the source change is feasible. Some discrepancies are recorded for the reader's information. 
-
-
-### Summary
-
-In the table below we list a summary of commodity products whose data sources are changed. The majority of the products can use the new sources without issues. Some have inconsistent values and/or time period availability: 
-
-* Values match, while some time periods are missing: **iron ore, manganese, rubber, wool (fine)**. In the computation of index, we either use omit the missing period in the new source, or impute with historical data from another source.
-* Time periods are all available, while values differ. This can be due to different units, exchange rates or unknown reasons. After adjustment, the difference do not affect the index computation much.
-* Historical comparison data from old sources are unavailable.
-
-Please go to the details for each product for more information. The data source corresponding to the 4-digit code can be found in Appendix 1. 
 
 
 ```{r}
@@ -81,7 +65,6 @@ tb2
 
 # Compiled indices 
 
-In the table below we list the published UNCTAD commodity data names, and the the short names for coding.
 
 ```{r}
 #| eval: true
@@ -96,18 +79,6 @@ grouping <- openxlsx::read.xlsx(paste0(read_path, dir_metadata, 'weights.xlsx'),
 gt(grouping[, c(1,2)])
 ```
 
-
-In the following section, computed indices with the automatic sources are visualized together. The ordering are based on the groups:
-
-* overall
-* food and agricultural
-* metal
-* fuel
-* other combinations
-
-Please refer to the metadata to find out what is included in each group.
-
-In general, the quality of using automatic commodity sources are quite good. For more details please check the graphics below.
 
 
 ## Overall group
@@ -213,8 +184,6 @@ plot_index_comparison(data = indices_both,
 
 # Individual commodity products
 
-In this section we provide the details on each commodity. They are ordered based on the 8-digit product ID, as shown in the table above. 
-
 
 ```{r}
 #| eval: true
@@ -245,13 +214,6 @@ plot_comparison_price(dobj = d)
 
 ## Banana
 
-In the metadata, there are three codes for banana
-
-* if we use `080300.01`, the old source is also WB. Can use directly
-* in the old way to compile the price index, code `080300.03` is used, which comes from TR. This series is quite different from WB data.
-* another series `080300.02` also exists in WB
-
-
 
 ```{r}
 #| echo: false
@@ -263,6 +225,7 @@ d <- merge_price_new_old(data_new = dcommodity,
                           info_target = checklist[2,])
 make_commodity_infocard(checklist[2,])
 plot_comparison_price(dobj = d)
+plot_comparison_price_facet(dobj = d)
 ```
 
 
@@ -313,7 +276,7 @@ make_commodity_infocard(checklist[5,])
 plot_comparison_price(dobj = d)
 ```
 
-### Maize
+## Maize
 
 ```{r}
 #| echo: false
@@ -394,10 +357,6 @@ plot_comparison_price_facet(dobj = d, free_scale = T)
 ```
 
 ## Manganese
-
-Historical data is from Metal Bulletin.
-
-New source: IMF, available from 2012.6.1. In the computation of price indices, historical data may be used to impute the missing values.
 
 ```{r}
 #| echo: false
@@ -538,15 +497,6 @@ plot_comparison_price(dobj = d)
 
 ## Rubber
 
-
-Rubber has two codes in WB, RSS3 and TR
-
-* RSS3 is available for all times
-* TSR20 is available from 1999.1.1. The old source is using TSR20 in the price index computation
-* We can either impute the historical TSR20, or use RSS3 instead, should not create big difference. In practice, we are using only **RSS3**.
-
-
-
 ```{r}
 #| echo: false
 #| warning: false
@@ -564,11 +514,6 @@ p
 
 
 ## Hides
-
-No comparison data, only IMF.
-
-Available for all times.
-
 
 ```{r}
 #| echo: false
@@ -588,17 +533,6 @@ p
 
 ## Wool
 
-Historical data: `510100.02`, `510100.03` available from AWI
-
-* `510100.03` only from 2013. Fine wool
-* `510100.02` only available for very short period, can drop it
-
-New source: IMF has PWOOLF (fine) and PWOOLC (coarse) for all times. For the comparison, `510100.03` is compared with `PWOOLF`. For the period where they both exist, seem to overlap quite well. 
-
-For the purpose of computing the index, use `PWOOLF`.
-
-
-
 ```{r}
 #| echo: false
 #| warning: false
@@ -614,11 +548,6 @@ plot_comparison_price_facet(dobj = d)
 ```
 
 ## Jute
-
-Jute only has one data source, which is FAO. No other historical data exists. Just use this for the computation.
-
-Only available from 2004. In the price compilation, it may be dropped completely.
-
 
 ```{r}
 #| echo: false
