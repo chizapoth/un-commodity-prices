@@ -81,11 +81,12 @@ wb_raw <- read.xlsx(wb_link,
 
 # print the column names
 wb_var <- get_info_wb(wb_raw)
-# View(wb_var)
 
-#### TO DO: add counts ----
+# check ----# 
 # e.g. 72 this month, if it's still 72 next month
+cat('World Bank data contains',nrow(wb_var), 'columns, please verify if it agrees with previous month')
 # check colname changes 
+# View(wb_var)
 
 
 
@@ -159,6 +160,7 @@ imf_raw <- read_excel(path = imf_loc)
 
 imf_var <- get_info_imf(imf_raw)
 # View(imf_var)
+cat('IMF data contains',nrow(imf_var), 'columns, please verify if it agrees with previous month')
 
 
 
@@ -522,12 +524,18 @@ phosphate_rock_filled$d_tofill
 phosphate_rock_filled$d_filled
 dcommodity_filled$phosphate_rock <- phosphate_rock_filled
 
-#### TO DO: impute with neighbors ----
-# additional imputation: 
+# impute with neighbors ----
+# note: so far only impute with 1 neighbor implemented
+
+# impute_one_by_one(k = 1, v = c(10, 11, 20, NA, 5))
+impute_with_neighbors(data = dcommodity_filled, varname = 'phosphate_rock')
+
+
+
+
 # latest missing: carry forward 
-
-
-
+# only when the last value is missing
+# the function is in util.R
 
 
 

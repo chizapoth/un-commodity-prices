@@ -102,6 +102,8 @@ fill_imf_name <- function(data, keyword, col_to_fill, fill_name){
 
 
 
+# checks and imputation ----
+
 check_date_convert <- function(x){
   if(typeof(x) == 'double'){
     x <- openxlsx::convertToDate(x, origin = '1900-01-01')
@@ -147,6 +149,69 @@ impute_with_mean <- function(data, varname){
               n_impute = n_impute, 
               mean_val = mean_val))
 }
+
+
+
+impute_one_by_one <- function(k, v){
+  #v <- c(10, 11, 20, NA, 5)
+  #k <- 1
+  id_range_neighbors <- which(is.na(v))+k*c(-1,1)
+  id_take <- seq(id_range_neighbors[1], id_range_neighbors[2])
+  avg <- mean(v[id_take], na.rm = T)
+  v_impute <- v
+  v_impute[which(is.na(v))] <- avg
+  return(v_impute)
+}
+
+
+impute_with_neighbors <- function(data, varname){
+  
+  # still using the mean
+  # data <- dcommodity_filled
+  # varname <- 'phosphate_rock'
+  # note: default is 1
+  
+  n_impute <- sum(is.na(data[[varname]]))
+  if(n_impute == 0){
+    stop('No missing')
+  }
+  if(n_impute >1){
+    stop('Multiple imputation not implemented. Please investigate more carefully the missing pattern')
+  }
+  
+  d_tofill <- data[[varname]]
+  d_filled <- d_tofill
+  # default is 1 neighbor
+  d_filled <- impute_one_by_one(k=1, v = d_filled)
+  
+  return(list(d_tofill = d_tofill,
+              d_filled = d_filled,
+              n_impute = n_impute))
+  
+}
+
+
+impute_last_value <- function(data, varname){
+  
+  
+  v <- data[[varname]]
+  # v <- c(10, 11, 20, 5, NA)
+  if(sum(is.na(v)) == 1){
+    if(which(is.na(v)) == length(v)){
+      v_filled <- v
+      v_filled[is.na(v)] = v_filled[(which(is.na(v))-1)]
+      
+    }else{
+      stop('Missing point is not the last one, use other methods')
+    }
+  }else{
+    stop('More than 1 missing point, use other methods')
+  }
+  return(list(d_tofill = v,
+              d_filled = v_filled))
+  
+}
+
 
 
 # compute index ----
